@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file. This changelog 
 ## 2025-10
 
 ### Added
-- 2025-10-23: **feat: launcher rebalance - unified range (7550) and reload (0.5s) across all launchers** [docs](https://github.com/BAR-NuttyB-collective/NuttyB-Raptors/wiki/2025-10-23_launcher_rebalances) - *Fast*
+- 2025-10-23: **feat: launcher rebalance - unified range (7550) and reload (0.5s) across all launchers** [docs](https://github.com/BAR-NuttyB-collective/NuttyB/wiki/2025-10-23_launcher_rebalances) - *Fast*
 - 2025-10-23: **feat: expand legion commander buildoptions** - Added leglab, legeconv, leglrpc, armannit3 to various legion commander levels for more strategic options - *Fast*
 - 2025-10-22: **feat: double arm com stockpile** - *Fast*
 - 2025-10-22: **feat: add exp inheritance to all commanders** - *Fast*

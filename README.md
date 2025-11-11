@@ -1,10 +1,10 @@
-# 🦖 Collective NuttyB Raptors
+# 🦖 Collective NuttyB
 
-A comprehensive modification for Beyond All Reason's Raptor Defense mode, featuring extensive balance changes, new units, and enhanced gameplay mechanics.
+Collective NuttyB is a mod for BAR Raptors and Scavengers on steroids!
 
 ## 📚 Documentation
 
-- **[Wiki](https://github.com/BAR-NuttyB-collective/NuttyB-Raptors/wiki)** - Complete guides and documentation
+- **[Wiki](https://github.com/BAR-NuttyB-collective/NuttyB/wiki)** - Complete guides and documentation
 - **[Changelog](CHANGELOG.md)** - Detailed version history with author attributions
 
 ## 🎮 Quick Start for Players
@@ -34,7 +34,7 @@ Additional commands are available in the [Makefile](Makefile).
 
 1. Use the [Collective NuttyB Configurator](https://github.com/BAR-NuttyB-collective/configurator) to update configurations, it has a [sync script](https://github.com/BAR-NuttyB-collective/configurator?tab=readme-ov-file#sync) for that.
 2. Make sure to update the [CHANGELOG](CHANGELOG.md) with any significant changes.
-2. Update the [Wiki](https://github.com/BAR-NuttyB-collective/NuttyB-Raptors/wiki) with any significant changes
+2. Update the [Wiki](https://github.com/BAR-NuttyB-collective/NuttyB/wiki) with any significant changes
 
 ## 👥 Contributors
 
