@@ -336,7 +336,8 @@ return {
 			'armrectr',
 			'armgatet3',
 			'legendary_pulsar',
-			'armnanotct3'
+			'armnanotct3',
+			'epic_ragnarok',
 		},
 		customparams = {
 			evolution_target = 'armcomlvl4',
@@ -513,7 +514,8 @@ return {
 			'armrectr',
 			'armgatet3',
 			'legendary_pulsar',
-			'armnanotct3'
+			'armnanotct3',
+			'epic_ragnarok',
 		},
 		weapondefs = {
 			old_armsnipe_weapon = {

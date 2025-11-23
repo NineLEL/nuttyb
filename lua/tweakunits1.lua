@@ -255,6 +255,9 @@ return {
 			'legendary_bastion',
 			'legnanotct3',
 			'legapopupdef',
+			'epic_starfall',
+			'epic_bastion',
+			'epic_sentinel',
 		},
 		weapondefs = {
 			legcomlaser = {
@@ -409,7 +412,9 @@ return {
 			'legnanotct3',
 			'legapopupdef',
 			'leglrpc',
-			'armannit3'
+			'epic_starfall',
+			'epic_bastion',
+			'epic_sentinel',
 		},
 		weapondefs = {
 			legcomlaser = {
@@ -562,7 +567,9 @@ return {
 			'legnanotct3',
 			'legapopupdef',
 			'leglrpc',
-			'armannit3'
+			'epic_starfall',
+			'epic_bastion',
+			'epic_sentinel',
 		},
 		weapondefs = {
 			machinegun = {
