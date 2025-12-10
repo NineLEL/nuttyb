@@ -1,6 +1,10 @@
 {
     "$schema": "https://unpkg.com/knip@5/schema.json",
-    "entry": ["src/app/**/*.{ts,tsx}", "scripts/sync/sync.ts"],
+    "entry": [
+        "src/app/**/*.{ts,tsx}",
+        "scripts/sync/sync.ts",
+        "scripts/bundle-test/bundle-test.ts"
+    ],
     "project": ["src/**/*.{ts,tsx,js,jsx}", "scripts/**/*.{ts,tsx,js,jsx}"],
     "ignore": ["**/*.config.*"],
     "ignoreDependencies": ["eslint-nibble", "tailwindcss"],
