@@ -61,4 +61,7 @@ This project has been made possible by the contributions of:
 
 ## 📜 License
 
-See [LICENSE](LICENSE) file for details.
+This project uses these open source licenses:
+
+- Original NuttyB tweaks: MIT License ([LICENSE-NuttyB.md](licenses/LICENSE-NuttyB.md)).
+- Configurator web application: Apache License Version 2.0 ([LICENSE-Configurator.md](licenses/LICENSE-Configurator.md)).
