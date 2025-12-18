@@ -9,7 +9,7 @@ This is a monorepo that contains:
 ## 📚 Documentation
 
 - **[Wiki](https://wiki.nuttyb.org)** - Complete guides and documentation
-- **[Changelog](CHANGELOG.md)** - Detailed version history with author attributions
+- **[Changelog](https://wiki.nuttyb.org/changelog)** - Detailed version history with author attributions
 
 ## 🎮 Quick Start for Players
 
