@@ -8,13 +8,13 @@ This is a monorepo that contains:
 
 ## 📚 Documentation
 
-- **[Wiki](https://github.com/BAR-NuttyB-collective/NuttyB/wiki)** - Complete guides and documentation
+- **[Wiki](https://wiki.nuttyb.org)** - Complete guides and documentation
 - **[Changelog](CHANGELOG.md)** - Detailed version history with author attributions
 
 ## 🎮 Quick Start for Players
 
 ### Getting the Mod
-Use the [Collective NuttyB Configurator](https://bar-nuttyb-collective.github.io/NuttyB/) to generate your custom configuration with the tweaks you want.
+Use the [Collective NuttyB Configurator](https://configurator.nuttyb.org) to generate your custom configuration with the tweaks you want.
 
 ## 🛠️ Development
 
