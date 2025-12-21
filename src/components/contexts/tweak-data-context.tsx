@@ -2,6 +2,11 @@ import React, { createContext, useContext } from 'react';
 
 interface TweakDataContext {
     sections: string[];
+    slotUsage?: {
+        tweakdefs: { used: number; total: number };
+        tweakunits: { used: number; total: number };
+    };
+    error?: string;
 }
 
 const TweakDataContext = createContext<TweakDataContext | undefined>(undefined);
@@ -23,10 +28,12 @@ type TweakDataProviderProps = TweakDataContext & {
 
 export function TweakDataProvider({
     sections,
+    slotUsage,
+    error,
     children,
 }: TweakDataProviderProps) {
     return (
-        <TweakDataContext.Provider value={{ sections }}>
+        <TweakDataContext.Provider value={{ sections, slotUsage, error }}>
             {children}
         </TweakDataContext.Provider>
     );

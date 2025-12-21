@@ -87,27 +87,7 @@ const CustomTweaksSection: React.FC = () => {
         [configuration]
     );
 
-    // Get assigned slot for each enabled tweak (simulating the allocation algorithm)
-    const assignedSlots = useMemo(() => {
-        const slots = new Map<number, number>();
-        const usage: SlotUsage = {
-            tweakdefs: new Set(baseSlotUsage.tweakdefs),
-            tweakunits: new Set(baseSlotUsage.tweakunits),
-        };
-
-        // Process in order (matching buildLobbySections behavior)
-        for (const tweak of customTweaks) {
-            if (enabledIds.has(tweak.id)) {
-                const slot = findFirstAvailableSlot(usage, tweak.type);
-                if (slot !== null) {
-                    slots.set(tweak.id, slot);
-                    usage[tweak.type].add(slot);
-                }
-            }
-        }
-
-        return slots;
-    }, [baseSlotUsage, customTweaks, enabledIds]);
+    // Note: assignedSlots tracking removed since we no longer display slot numbers in badges
 
     // Calculate available slot counts (accounting for enabled custom tweaks)
     const availableSlotCounts = useMemo(() => {
@@ -173,7 +153,6 @@ const CustomTweaksSection: React.FC = () => {
             <Flex gap='md' align='baseline' direction='row' wrap='wrap'>
                 {customTweaks.map((tweak) => {
                     const enabled = isEnabled(tweak.id);
-                    const slot = assignedSlots.get(tweak.id);
                     const disabled = !canEnable(tweak.type, tweak.id);
 
                     return (
@@ -198,9 +177,7 @@ const CustomTweaksSection: React.FC = () => {
                                         : 'green'
                                 }
                             >
-                                {enabled && slot !== undefined
-                                    ? `${tweak.type}${slot}`
-                                    : tweak.type}
+                                {tweak.type}
                             </Badge>
                         </Flex>
                     );

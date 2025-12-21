@@ -2,7 +2,15 @@
 
 import React from 'react';
 
-import { Button, Group, Stack, Text, Textarea, Title } from '@mantine/core';
+import {
+    Alert,
+    Button,
+    Group,
+    Stack,
+    Text,
+    Textarea,
+    Title,
+} from '@mantine/core';
 import { useClipboard } from '@mantine/hooks';
 
 import { useTweakDataContext } from '@/components/contexts/tweak-data-context';
@@ -44,10 +52,10 @@ function CopySection({ content, label }: CopySectionProps) {
 }
 
 const GeneratedCommands: React.FC = () => {
-    const { sections } = useTweakDataContext();
+    const { sections, slotUsage, error } = useTweakDataContext();
 
     // Hide section entirely when no commands
-    if (sections.length === 0) {
+    if (sections.length === 0 && !error) {
         return null;
     }
 
@@ -56,6 +64,20 @@ const GeneratedCommands: React.FC = () => {
     return (
         <Stack gap='md'>
             <Title order={2}>Generated Commands</Title>
+
+            {error && (
+                <Alert color='red' title='Command Generation Error'>
+                    {error}
+                </Alert>
+            )}
+
+            {slotUsage && !error && (
+                <Text size='sm' c='dimmed'>
+                    Using {slotUsage.tweakdefs.used}/{slotUsage.tweakdefs.total}{' '}
+                    tweakdefs slots, {slotUsage.tweakunits.used}/
+                    {slotUsage.tweakunits.total} tweakunits slots
+                </Text>
+            )}
 
             {hasMultipleSections && (
                 <Text size='sm' c='dimmed'>

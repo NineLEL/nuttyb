@@ -21,19 +21,23 @@ export default function Page() {
         useCustomTweaksContext();
 
     const enabledCustomTweaks = getEnabledTweaks();
-    const { sections } = useTweakData(
-        configuration,
-        luaFiles,
-        enabledCustomTweaks
-    );
+    const {
+        sections,
+        slotUsage,
+        error: tweakError,
+    } = useTweakData(configuration, luaFiles, enabledCustomTweaks);
 
     const isLoading = isLuaLoading || isConfigLoading || isTweaksLoading;
 
     if (isLoading) return <PageLoader />;
-    if (error) return <div>Error: {error.message}</div>;
+    if (error) return <div>Error loading Lua bundle: {error.message}</div>;
 
     return (
-        <TweakDataProvider sections={sections}>
+        <TweakDataProvider
+            sections={sections}
+            slotUsage={slotUsage}
+            error={tweakError}
+        >
             <Stack gap='xl'>
                 <Configurator />
                 <Divider />

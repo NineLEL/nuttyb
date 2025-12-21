@@ -12,6 +12,55 @@ export const MAX_COMMAND_LENGTH = 51_000;
 export const MAX_SLOTS_PER_TYPE = 10;
 
 /**
+ * Target size for packed Lua slots (allows multiple files per slot).
+ * Provides buffer below MAX_COMMAND_LENGTH for Base64 encoding overhead.
+ */
+export const TARGET_SLOT_SIZE = 12_000;
+
+/**
+ * Priority levels for Lua files (0 = highest priority, loads first).
+ * Lower priority numbers ensure dependencies load before dependent code.
+ */
+export const LUA_PRIORITIES: Record<string, number> = {
+    // Priority 0: Core framework files
+    'lua/main-defs.lua': 0,
+    'lua/main-units.lua': 0,
+
+    // Priority 1: Essential gameplay features
+    'lua/eco-t3.lua': 1,
+    'lua/builders-t3.lua': 1,
+    'lua/cross-faction-t2.lua': 1,
+
+    // Priority 2: Unit system tweaks
+    'lua/unit-launchers.lua': 2,
+    'lua/lrpc-rebalance.lua': 2,
+
+    // Priority 3: Faction-specific evocoms
+    'lua/evocom-arm.lua': 3,
+    'lua/evocom-cor.lua': 3,
+    'lua/evocom-leg.lua': 3,
+
+    // Priority 4: Advanced features
+    'lua/defences-t4.lua': 4,
+    'lua/mini-bosses.lua': 4,
+
+    // Priority 5: Dynamic templates (HP multipliers)
+    'lua/raptor-hp-template.lua': 5,
+    'lua/queen-hp-template.lua': 5,
+
+    // Priority 6: Experimental/optional features
+    'lua/wave-challenge.lua': 6,
+    'lua/mega-nuke.lua': 6,
+    'lua/air-rework-t4.lua': 6,
+} as const;
+
+/**
+ * Default priority for Lua files not explicitly listed.
+ * Placed after core files but before experimental features.
+ */
+export const DEFAULT_LUA_PRIORITY = 99;
+
+/**
  * Base commands always included for Raptors mode.
  */
 export const BASE_COMMANDS = [

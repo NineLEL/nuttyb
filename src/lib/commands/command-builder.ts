@@ -10,8 +10,43 @@ import {
     BASE_COMMANDS,
     BASE_TWEAKS,
     CONFIGURATION_MAPPING,
+    DEFAULT_LUA_PRIORITY,
+    LUA_PRIORITIES,
     MAX_COMMAND_LENGTH,
 } from '../data/configuration-mapping';
+
+/**
+ * Result of building lobby command sections with metadata.
+ */
+export interface LobbySectionsResult {
+    sections: string[];
+    slotUsage: {
+        tweakdefs: { used: number; total: number };
+        tweakunits: { used: number; total: number };
+    };
+}
+
+/**
+ * A Lua source with its path and priority for packing.
+ */
+interface LuaSourceWithMetadata {
+    path: string;
+    content: string;
+    priority: number;
+}
+
+/**
+ * Gets the priority for a Lua file path.
+ * Strips template variables and ~ prefix before lookup.
+ *
+ * @param path File path (e.g., '~lua/main-defs.lua' or '~lua/raptor-hp-template.lua{HP_MULTIPLIER=1.5}')
+ * @returns Priority level (0 = highest)
+ */
+function getLuaFilePriority(path: string): number {
+    // Strip ~ prefix and template variables: ~lua/file.lua{VAR=val} -> lua/file.lua
+    const cleanPath = path.replace(/^~/, '').replace(/\{[^}]*\}$/, '');
+    return LUA_PRIORITIES[cleanPath] ?? DEFAULT_LUA_PRIORITY;
+}
 
 /**
  * Builds the !rename command for custom lobby naming.
@@ -35,24 +70,25 @@ function buildRenameCommand(configuration: Configuration): string {
  * Builds paste-ready lobby command sections from configuration and Lua files.
  *
  * This is the main entry point for command generation. It:
- * 1. Maps configuration options to raw Lua sources and commands
- * 2. Packs Lua sources into `!bset` commands (encoding once at output)
+ * 1. Maps configuration options to Lua sources with paths and priorities
+ * 2. Packs Lua sources into optimized `!bset` commands using IIFE wrapping
  * 3. Allocates slots for enabled custom tweaks
  * 4. Groups all commands into sections ≤ MAX_COMMAND_LENGTH
+ * 5. Returns sections with slot usage metadata
  *
  * @param configuration User's selected configuration
  * @param luaFiles Available Lua files from bundle
  * @param customTweaks Optional array of enabled custom tweaks to include
- * @returns Array of paste-ready sections (each ≤ MAX_COMMAND_LENGTH chars)
+ * @returns Sections and slot usage metadata
  */
 export function buildLobbySections(
     configuration: Configuration,
     luaFiles: LuaFile[],
     customTweaks?: EnabledCustomTweak[]
-): string[] {
-    // Collect raw data by type
-    const tweakdefsSources: string[] = [];
-    const tweakunitsSources: string[] = [];
+): LobbySectionsResult {
+    // Collect Lua sources with metadata for priority-based packing
+    const tweakdefsSources: LuaSourceWithMetadata[] = [];
+    const tweakunitsSources: LuaSourceWithMetadata[] = [];
     const rawCommands: string[] = [];
 
     const luaFileMap = new Map(luaFiles.map((f) => [f.path, f.data]));
@@ -60,18 +96,26 @@ export function buildLobbySections(
     // Always include Raptor base commands
     rawCommands.push(...BASE_COMMANDS);
 
-    // Always include always-enabled tweaks
+    // Always include always-enabled tweaks (with paths for priority lookup)
     for (const path of BASE_TWEAKS.tweakdefs) {
         const luaContent = processLuaReference(path, luaFileMap);
         if (luaContent) {
-            tweakdefsSources.push(luaContent.trim());
+            tweakdefsSources.push({
+                path,
+                content: luaContent.trim(),
+                priority: getLuaFilePriority(path),
+            });
         }
     }
 
     for (const path of BASE_TWEAKS.tweakunits) {
         const luaContent = processLuaReference(path, luaFileMap);
         if (luaContent) {
-            tweakunitsSources.push(luaContent.trim());
+            tweakunitsSources.push({
+                path,
+                content: luaContent.trim(),
+                priority: getLuaFilePriority(path),
+            });
         }
     }
 
@@ -91,7 +135,7 @@ export function buildLobbySections(
             rawCommands.push(...commands);
         }
 
-        // Process Lua files (tweakdefs and tweakunits)
+        // Process Lua files (tweakdefs and tweakunits) with paths for priority
         for (const [type, paths] of [
             ['tweakdefs', tweakValue.tweakdefs],
             ['tweakunits', tweakValue.tweakunits],
@@ -105,31 +149,38 @@ export function buildLobbySections(
                     continue;
                 }
 
-                const trimmedSource = luaContent.trim();
+                const source: LuaSourceWithMetadata = {
+                    path,
+                    content: luaContent.trim(),
+                    priority: getLuaFilePriority(path),
+                };
+
                 if (type === 'tweakdefs') {
-                    tweakdefsSources.push(trimmedSource);
+                    tweakdefsSources.push(source);
                 } else {
-                    tweakunitsSources.push(trimmedSource);
+                    tweakunitsSources.push(source);
                 }
             }
         }
     }
 
-    // Generate all commands
-    // Pack Lua sources into !bset commands
-    const tweakdefsCommands = packLuaSourcesIntoSlots(
+    // Pack Lua sources with new multi-file IIFE packing
+    const tweakdefsResult = packLuaSourcesIntoSlots(
         tweakdefsSources,
         'tweakdefs'
     );
-    const tweakunitsCommands = packLuaSourcesIntoSlots(
+    const tweakunitsResult = packLuaSourcesIntoSlots(
         tweakunitsSources,
         'tweakunits'
     );
 
     // Combine standard bset commands for slot analysis
-    const standardBsetCommands = [...tweakdefsCommands, ...tweakunitsCommands];
+    const standardBsetCommands = [
+        ...tweakdefsResult.commands,
+        ...tweakunitsResult.commands,
+    ];
 
-    // Generate custom tweak commands with dynamic slot allocation
+    // Generate custom tweak commands with dynamic slot allocation (still 1:1)
     const customTweakCommands = allocateCustomTweakSlots(
         standardBsetCommands,
         customTweaks
@@ -157,7 +208,13 @@ export function buildLobbySections(
 
     // Group commands into paste-ready sections
     if (allCommands.length === 0) {
-        return [];
+        return {
+            sections: [],
+            slotUsage: {
+                tweakdefs: tweakdefsResult.slotUsage,
+                tweakunits: tweakunitsResult.slotUsage,
+            },
+        };
     }
 
     interface Section {
@@ -189,5 +246,11 @@ export function buildLobbySections(
         }
     }
 
-    return sections.map((section) => section.commands.join('\n'));
+    return {
+        sections: sections.map((section) => section.commands.join('\n')),
+        slotUsage: {
+            tweakdefs: tweakdefsResult.slotUsage,
+            tweakunits: tweakunitsResult.slotUsage,
+        },
+    };
 }
