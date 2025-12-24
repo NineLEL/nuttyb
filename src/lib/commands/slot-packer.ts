@@ -1,11 +1,16 @@
 import { encode } from '../base64';
-import type { EnabledCustomTweak, SlotUsage } from './custom-tweaks';
-import { calculateUsedSlots, findFirstAvailableSlot } from './custom-tweaks';
+import { formatSlotName } from './custom-tweaks';
 import {
     MAX_COMMAND_LENGTH,
     MAX_SLOTS_PER_TYPE,
     TARGET_SLOT_SIZE,
 } from '../data/configuration-mapping';
+
+/**
+ * Base64 encoding overhead estimate (~37% expansion + padding).
+ * Conservative multiplier to avoid exceeding TARGET_SLOT_SIZE after encoding.
+ */
+const BASE64_OVERHEAD_MULTIPLIER = 1.4;
 
 /**
  * Result of packing Lua sources into slots with metadata.
@@ -25,60 +30,6 @@ interface LuaSourceWithMetadata {
     path: string;
     content: string;
     priority: number;
-}
-
-/**
- * Result of allocating custom tweak slots.
- */
-export interface CustomTweakAllocationResult {
-    commands: string[];
-    droppedCustomTweaks: EnabledCustomTweak[];
-}
-
-/**
- * Allocates slots for custom tweaks and generates !bset commands.
- *
- * Custom tweaks are pre-encoded Base64URL strings, so we just need to
- * find available slots and generate the appropriate commands.
- *
- * @param existingCommands Array of existing !bset commands to analyze for used slots
- * @param customTweaks Optional array of enabled custom tweaks
- * @returns Commands and tweaks that couldn't be allocated
- */
-export function allocateCustomTweakSlots(
-    existingCommands: string[],
-    customTweaks?: EnabledCustomTweak[]
-): CustomTweakAllocationResult {
-    if (!customTweaks || customTweaks.length === 0) {
-        return { commands: [], droppedCustomTweaks: [] };
-    }
-
-    // Calculate which slots are already used by standard tweaks
-    const slotUsage: SlotUsage = calculateUsedSlots(existingCommands);
-
-    const customCommands: string[] = [];
-    const droppedCustomTweaks: EnabledCustomTweak[] = [];
-
-    for (const tweak of customTweaks) {
-        const slot = findFirstAvailableSlot(slotUsage, tweak.type);
-
-        if (slot === null) {
-            // Collect the tweak instead of console.warn
-            droppedCustomTweaks.push(tweak);
-            continue;
-        }
-
-        // Mark slot as used for subsequent iterations
-        slotUsage[tweak.type].add(slot);
-
-        // Generate the !bset command
-        // Custom tweaks are already Base64URL encoded
-        const slotName = `${tweak.type}${slot}`;
-        const command = `!bset ${slotName} ${tweak.code}`;
-        customCommands.push(command);
-    }
-
-    return { commands: customCommands, droppedCustomTweaks };
 }
 
 /**
@@ -139,7 +90,7 @@ function packPriorityGroup(
         const wrappedSize = Buffer.byteLength(wrapped, 'utf8');
 
         // Estimate Base64 overhead: ~1.37x for actual encoding + padding
-        const estimatedEncoded = wrappedSize * 1.4;
+        const estimatedEncoded = wrappedSize * BASE64_OVERHEAD_MULTIPLIER;
 
         // If adding this source exceeds target, finalize current slot
         if (
@@ -218,7 +169,7 @@ export function packLuaSourcesIntoSlots(
 
     for (const [slotIndex, slotContent] of allSlotContents.entries()) {
         const encoded = encode(slotContent);
-        const slotName = slotIndex === 0 ? slotType : `${slotType}${slotIndex}`;
+        const slotName = formatSlotName(slotType, slotIndex);
         const command = `!bset ${slotName} ${encoded}`;
 
         // Validate command length

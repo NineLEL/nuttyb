@@ -120,7 +120,7 @@ function interpolateTemplate(
 }
 
 /**
- * Main API: Processes a Lua file reference with optional variable interpolation.
+ * Main API: Resolves a Lua file reference with optional variable interpolation.
  *
  * Handles both standard references (~lua/file.lua) and template references
  * (~lua/template.lua{VAR=value}). Loads file from bundle, interpolates variables,
@@ -132,13 +132,13 @@ function interpolateTemplate(
  * @throws Error if reference is malformed or file not found in bundle
  *
  * @example
- * processLuaReference(
+ * resolveLuaReference(
  *   '~lua/raptor-hp-template.lua{HP_MULTIPLIER=1.5}',
  *   luaFileMap
  * )
  * // Loads template, replaces $HP_MULTIPLIER$ with 1.5, returns interpolated code
  */
-export function processLuaReference(
+export function resolveLuaReference(
     ref: string,
     luaFileMap: Map<string, string>
 ): string {

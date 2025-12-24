@@ -103,6 +103,14 @@ export interface SlotUsage {
 }
 
 /**
+ * Result of allocating custom tweak slots.
+ */
+export interface CustomTweakAllocationResult {
+    commands: string[];
+    droppedCustomTweaks: EnabledCustomTweak[];
+}
+
+/**
  * Regex to extract slot type and number from !bset commands.
  * Captures: [1] = type (tweakdefs|tweakunits), [2] = slot number (empty for base slot, 1-9 for numbered)
  */
@@ -114,7 +122,7 @@ const BSET_SLOT_REGEX = /!bset\s+(tweakdefs|tweakunits)(\d?)\s/;
  * @param commands Array of command strings to analyze
  * @returns Sets of used slot numbers per type (0 = base slot, 1-9 = numbered slots)
  */
-export function calculateUsedSlots(commands: string[]): SlotUsage {
+function calculateUsedSlots(commands: string[]): SlotUsage {
     const usage: SlotUsage = {
         tweakdefs: new Set(),
         tweakunits: new Set(),
@@ -139,7 +147,7 @@ export function calculateUsedSlots(commands: string[]): SlotUsage {
  * @param type Tweak type to check
  * @returns Slot number (1-9) or null if all slots are taken
  */
-export function findFirstAvailableSlot(
+function findFirstAvailableSlot(
     usage: SlotUsage,
     type: LuaTweakType
 ): number | null {
@@ -149,4 +157,67 @@ export function findFirstAvailableSlot(
         }
     }
     return null;
+}
+
+/**
+ * Formats a slot name according to BAR conventions.
+ *
+ * Slot 0 is the base slot (e.g., 'tweakdefs').
+ * Slots 1-9 are numbered (e.g., 'tweakdefs1', 'tweakdefs2', ...).
+ *
+ * @param type Slot type ('tweakdefs' or 'tweakunits')
+ * @param slotNumber Slot number (0-9)
+ * @returns Formatted slot name
+ *
+ * @example
+ * formatSlotName('tweakdefs', 0) // 'tweakdefs'
+ * formatSlotName('tweakdefs', 1) // 'tweakdefs1'
+ * formatSlotName('tweakunits', 5) // 'tweakunits5'
+ */
+export function formatSlotName(type: LuaTweakType, slotNumber: number): string {
+    return slotNumber === 0 ? type : `${type}${slotNumber}`;
+}
+
+/**
+ * Allocates slots for custom tweaks and generates !bset commands.
+ *
+ * Custom tweaks are pre-encoded Base64URL strings, so we just need to
+ * find available slots and generate the appropriate commands.
+ *
+ * @param existingCommands Array of existing !bset commands to analyze for used slots
+ * @param customTweaks Optional array of enabled custom tweaks
+ * @returns Commands and tweaks that couldn't be allocated
+ */
+export function allocateCustomTweakSlots(
+    existingCommands: string[],
+    customTweaks?: EnabledCustomTweak[]
+): CustomTweakAllocationResult {
+    if (!customTweaks || customTweaks.length === 0) {
+        return { commands: [], droppedCustomTweaks: [] };
+    }
+
+    // Calculate which slots are already used by standard tweaks
+    const slotUsage: SlotUsage = calculateUsedSlots(existingCommands);
+
+    const customCommands: string[] = [];
+    const droppedCustomTweaks: EnabledCustomTweak[] = [];
+
+    for (const tweak of customTweaks) {
+        const slot = findFirstAvailableSlot(slotUsage, tweak.type);
+
+        if (slot === null) {
+            droppedCustomTweaks.push(tweak);
+            continue;
+        }
+
+        // Mark slot as used for subsequent iterations
+        slotUsage[tweak.type].add(slot);
+
+        // Generate the !bset command using formatSlotName
+        const slotName = formatSlotName(tweak.type, slot);
+        const command = `!bset ${slotName} ${tweak.code}`;
+        customCommands.push(command);
+    }
+
+    return { commands: customCommands, droppedCustomTweaks };
 }

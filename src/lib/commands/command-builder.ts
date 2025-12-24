@@ -1,10 +1,11 @@
 import type { Configuration } from '../configuration';
-import type { EnabledCustomTweak } from './custom-tweaks';
-import {
-    allocateCustomTweakSlots,
-    packLuaSourcesIntoSlots,
-} from './slot-packer';
-import { processLuaReference } from './template-interpolator';
+import type {
+    CustomTweakAllocationResult,
+    EnabledCustomTweak,
+} from './custom-tweaks';
+import { allocateCustomTweakSlots } from './custom-tweaks';
+import { packLuaSourcesIntoSlots } from './slot-packer';
+import { resolveLuaReference } from './template-interpolator';
 import type { LuaFile, TweakValue } from '../../types/types';
 import {
     BASE_COMMANDS,
@@ -68,6 +69,55 @@ function buildRenameCommand(configuration: Configuration): string {
 }
 
 /**
+ * Splits commands into sections using greedy bin-packing.
+ * Each section respects the maximum length constraint.
+ *
+ * @param commands Array of command strings
+ * @param maxLength Maximum length per section (including newline separators)
+ * @returns Array of section strings (commands joined by newlines)
+ */
+function splitCommandsIntoSections(
+    commands: string[],
+    maxLength: number
+): string[] {
+    if (commands.length === 0) {
+        return [];
+    }
+
+    interface Section {
+        commands: string[];
+        length: number;
+    }
+
+    const sections: Section[] = [];
+
+    for (const cmd of commands) {
+        if (!cmd) continue;
+
+        let placed = false;
+
+        for (const section of sections) {
+            // Account for newline separator (+1) unless it's the first command
+            const neededLength =
+                section.commands.length === 0 ? cmd.length : cmd.length + 1;
+
+            if (section.length + neededLength <= maxLength) {
+                section.commands.push(cmd);
+                section.length += neededLength;
+                placed = true;
+                break;
+            }
+        }
+
+        if (!placed) {
+            sections.push({ commands: [cmd], length: cmd.length });
+        }
+    }
+
+    return sections.map((section) => section.commands.join('\n'));
+}
+
+/**
  * Builds paste-ready lobby command sections from configuration and Lua files.
  *
  * This is the main entry point for command generation. It:
@@ -99,7 +149,7 @@ export function buildLobbySections(
 
     // Always include always-enabled tweaks (with paths for priority lookup)
     for (const path of BASE_TWEAKS.tweakdefs) {
-        const luaContent = processLuaReference(path, luaFileMap);
+        const luaContent = resolveLuaReference(path, luaFileMap);
         tweakdefsSources.push({
             path,
             content: luaContent.trim(),
@@ -108,7 +158,7 @@ export function buildLobbySections(
     }
 
     for (const path of BASE_TWEAKS.tweakunits) {
-        const luaContent = processLuaReference(path, luaFileMap);
+        const luaContent = resolveLuaReference(path, luaFileMap);
         tweakunitsSources.push({
             path,
             content: luaContent.trim(),
@@ -140,7 +190,7 @@ export function buildLobbySections(
             if (!paths || paths.length === 0) continue;
 
             for (const path of paths) {
-                const luaContent = processLuaReference(path, luaFileMap);
+                const luaContent = resolveLuaReference(path, luaFileMap);
                 const source: LuaSourceWithMetadata = {
                     path,
                     content: luaContent.trim(),
@@ -173,10 +223,8 @@ export function buildLobbySections(
     ];
 
     // Generate custom tweak commands with dynamic slot allocation (still 1:1)
-    const customTweakResult = allocateCustomTweakSlots(
-        standardBsetCommands,
-        customTweaks
-    );
+    const customTweakResult: CustomTweakAllocationResult =
+        allocateCustomTweakSlots(standardBsetCommands, customTweaks);
     const customTweakCommands = customTweakResult.commands;
     const droppedCustomTweaks = customTweakResult.droppedCustomTweaks;
 
@@ -200,49 +248,8 @@ export function buildLobbySections(
         ...customTweakCommands,
     ];
 
-    // Group commands into paste-ready sections
-    if (allCommands.length === 0) {
-        return {
-            sections: [],
-            slotUsage: {
-                tweakdefs: tweakdefsResult.slotUsage,
-                tweakunits: tweakunitsResult.slotUsage,
-            },
-            droppedCustomTweaks,
-        };
-    }
-
-    interface Section {
-        commands: string[];
-        length: number;
-    }
-
-    const sections: Section[] = [];
-
-    for (const cmd of allCommands) {
-        if (!cmd) continue;
-
-        let placed = false;
-
-        for (const section of sections) {
-            const neededLength =
-                section.commands.length === 0 ? cmd.length : cmd.length + 1;
-
-            if (section.length + neededLength <= MAX_COMMAND_LENGTH) {
-                section.commands.push(cmd);
-                section.length += neededLength;
-                placed = true;
-                break;
-            }
-        }
-
-        if (!placed) {
-            sections.push({ commands: [cmd], length: cmd.length });
-        }
-    }
-
     return {
-        sections: sections.map((section) => section.commands.join('\n')),
+        sections: splitCommandsIntoSections(allCommands, MAX_COMMAND_LENGTH),
         slotUsage: {
             tweakdefs: tweakdefsResult.slotUsage,
             tweakunits: tweakunitsResult.slotUsage,
