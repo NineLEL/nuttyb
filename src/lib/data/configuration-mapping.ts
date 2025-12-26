@@ -18,6 +18,13 @@ export const MAX_SLOTS_PER_TYPE = 10;
 export const TARGET_SLOT_SIZE = 12_000;
 
 /**
+ * Maximum size for a single Lua slot's Base64 payload.
+ * Set to accommodate large single files like evocom-leg.lua (~15KB after encoding).
+ * Actual limit is MAX_COMMAND_LENGTH (51,000) which includes the !bset prefix.
+ */
+export const MAX_SLOT_SIZE = 16_000;
+
+/**
  * Priority levels for Lua files (0 = highest priority, loads first).
  * Lower priority numbers ensure dependencies load before dependent code.
  */

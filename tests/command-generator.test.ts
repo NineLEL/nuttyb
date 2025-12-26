@@ -14,6 +14,7 @@ import {
     DEFAULT_LUA_PRIORITY,
     LUA_PRIORITIES,
     MAX_COMMAND_LENGTH,
+    MAX_SLOT_SIZE,
     MAX_SLOTS_PER_TYPE,
 } from '@/lib/data/configuration-mapping';
 import { stripCommentPrefix } from '@/lib/lua-comments';
@@ -119,6 +120,9 @@ describe('Command generation', () => {
                 /^!bset tweakdefs\d* |^!bset tweakunits\d* /,
                 ''
             );
+
+            expect(base64.length).toBeLessThanOrEqual(MAX_SLOT_SIZE);
+
             const decodedLines = decode(base64).split('\n');
             const sourceRefs = [];
             for (const line of decodedLines) {
