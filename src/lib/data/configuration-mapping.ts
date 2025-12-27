@@ -30,35 +30,23 @@ export const MAX_SLOT_SIZE = 16_000;
  */
 export const LUA_PRIORITIES: Record<string, number> = {
     // Priority 0: Core framework files
-    'lua/main-defs.lua': 0,
     'lua/main-units.lua': 0,
-
-    // Priority 1: Essential gameplay features
-    'lua/eco-t3.lua': 1,
-    'lua/builders-t3.lua': 1,
-    'lua/cross-faction-t2.lua': 1,
-
-    // Priority 2: Unit system tweaks
-    'lua/unit-launchers.lua': 2,
-    'lua/lrpc-rebalance.lua': 2,
-
-    // Priority 3: Faction-specific evocoms
-    'lua/evocom-arm.lua': 3,
-    'lua/evocom-cor.lua': 3,
-    'lua/evocom-leg.lua': 3,
-
-    // Priority 4: Advanced features
-    'lua/defences-t4.lua': 4,
+    'lua/raptor-hp-template.lua': 0,
+    'lua/queen-hp-template.lua': 0,
+    'lua/evocom-arm.lua': 1,
+    'lua/evocom-cor.lua': 1,
+    'lua/evocom-leg.lua': 1,
+    'lua/main-defs.lua': 2,
+    'lua/defences-t4.lua': 3,
     'lua/mini-bosses.lua': 4,
-
-    // Priority 5: Dynamic templates (HP multipliers)
-    'lua/raptor-hp-template.lua': 5,
-    'lua/queen-hp-template.lua': 5,
-
-    // Priority 6: Experimental/optional features
-    'lua/wave-challenge.lua': 6,
-    'lua/mega-nuke.lua': 6,
-    'lua/air-rework-t4.lua': 6,
+    'lua/mega-nuke.lua': 4,
+    'lua/wave-challenge.lua': 5,
+    'lua/cross-faction-t2.lua': 6,
+    'lua/lrpc-rebalance.lua': 6,
+    'lua/eco-t3.lua': 7,
+    'lua/air-rework-t4.lua': 7,
+    'lua/builders-t3.lua': 8,
+    'lua/unit-launchers.lua': 9,
 } as const;
 
 /**
