@@ -107,15 +107,26 @@ function buildRenameCommand(config: Configuration): string {
     return cmd;
 }
 
+/** Result of allocating custom tweaks to slots */
+interface CustomTweakAllocationResult {
+    commands: string[];
+    dropped: EnabledCustomTweak[];
+    allocated: { tweakdefs: number; tweakunits: number };
+}
+
 /**
  * Allocates slots for custom tweaks and generates !bset commands.
  */
 function allocateCustomTweaks(
     existingCommands: string[],
     customTweaks: EnabledCustomTweak[] | undefined
-): { commands: string[]; dropped: EnabledCustomTweak[] } {
+): CustomTweakAllocationResult {
     if (!customTweaks || customTweaks.length === 0) {
-        return { commands: [], dropped: [] };
+        return {
+            commands: [],
+            dropped: [],
+            allocated: { tweakdefs: 0, tweakunits: 0 },
+        };
     }
 
     // Parse used slots from existing commands
@@ -136,6 +147,7 @@ function allocateCustomTweaks(
 
     const commands: string[] = [];
     const dropped: EnabledCustomTweak[] = [];
+    const allocated = { tweakdefs: 0, tweakunits: 0 };
 
     for (const tweak of customTweaks) {
         // Find first available slot (1-9, slot 0 reserved for packed sources)
@@ -153,11 +165,12 @@ function allocateCustomTweaks(
         }
 
         usedSlots[tweak.type].add(slot);
+        allocated[tweak.type]++;
         const slotName = formatSlotName(tweak.type, slot);
         commands.push(`!bset ${slotName} ${tweak.code}`);
     }
 
-    return { commands, dropped };
+    return { commands, dropped, allocated };
 }
 
 /**
@@ -223,7 +236,11 @@ export function generateCommandSections(
     ];
 
     // Allocate custom tweaks
-    const { commands: customCommands, dropped } = allocateCustomTweaks(
+    const {
+        commands: customCommands,
+        dropped,
+        allocated,
+    } = allocateCustomTweaks(
         bsetCommands,
         customTweaks?.filter((t) => t.enabled)
     );
@@ -249,8 +266,14 @@ export function generateCommandSections(
     return {
         sections: packCommandsIntoSections(allCommands),
         slotUsage: {
-            tweakdefs: tweakdefsResult.slotUsage,
-            tweakunits: tweakunitsResult.slotUsage,
+            tweakdefs: {
+                used: tweakdefsResult.slotUsage.used + allocated.tweakdefs,
+                total: tweakdefsResult.slotUsage.total,
+            },
+            tweakunits: {
+                used: tweakunitsResult.slotUsage.used + allocated.tweakunits,
+                total: tweakunitsResult.slotUsage.total,
+            },
         },
         droppedCustomTweaks: dropped,
     };

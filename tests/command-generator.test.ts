@@ -100,6 +100,21 @@ describe('Command generation', () => {
             config,
             luaFiles
         );
+
+        // Validate slot usage statistics
+        expect(
+            generatedLobbySections.slotUsage.tweakdefs.used
+        ).toBeLessThanOrEqual(MAX_SLOTS_PER_TYPE);
+        expect(
+            generatedLobbySections.slotUsage.tweakunits.used
+        ).toBeLessThanOrEqual(MAX_SLOTS_PER_TYPE);
+        expect(generatedLobbySections.slotUsage.tweakdefs.total).toBe(
+            MAX_SLOTS_PER_TYPE
+        );
+        expect(generatedLobbySections.slotUsage.tweakunits.total).toBe(
+            MAX_SLOTS_PER_TYPE
+        );
+
         const sections = generatedLobbySections.sections;
 
         expect(sections.length).toBeGreaterThan(0);
