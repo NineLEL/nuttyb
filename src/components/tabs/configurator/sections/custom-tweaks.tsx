@@ -6,7 +6,7 @@ import { Badge, Checkbox, Flex, Stack, Title } from '@mantine/core';
 
 import { useCustomTweaksContext } from '@/components/contexts/custom-tweaks-context';
 import { useTweakDataContext } from '@/components/contexts/tweak-data-context';
-import type { LuaTweakType } from '@/lib/command-generator/command-generator';
+import type { LuaTweakType } from '@/types/types';
 
 const CustomTweaksSection: React.FC = () => {
     const { customTweaks, isEnabled, toggleTweak, enabledIds } =

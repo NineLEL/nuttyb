@@ -6,9 +6,9 @@ import { useLocalStorage } from '@/hooks/use-local-storage';
 import type {
     CustomTweak,
     EnabledCustomTweak,
-    LuaTweakType,
 } from '@/lib/command-generator/command-generator';
 import { CUSTOM_TWEAKS_STORAGE_KEY } from '@/lib/configuration-storage/keys';
+import { LuaTweakType } from '@/types/types';
 
 interface CustomTweaksContextValue {
     /** All saved custom tweaks */

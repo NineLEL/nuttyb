@@ -5,8 +5,10 @@
  * Sources must be pre-sorted by priority by the caller.
  */
 
-import { LuaTweakType } from './command-generator';
+import { LuaTweakType } from '@/types/types';
+
 import { MAX_CHUNK_SIZE, MAX_SLOT_SIZE, MAX_SLOTS_PER_TYPE } from './constants';
+import { formatSlotName } from './slot';
 import { encode } from '../encoders/base64';
 import { minify } from '../lua-utils/minificator';
 
@@ -50,18 +52,6 @@ function canFitInSlot(
     const encoded = encode(`${manifest}\n${minifiedContent}`);
 
     return encoded.length <= MAX_SLOT_SIZE;
-}
-
-/**
- * Generates slot name according to BAR conventions.
- * Slot 0 = 'tweakdefs', Slot 1+ = 'tweakdefs1', 'tweakdefs2', etc.
- *
- * @param type Type of tweak
- * @param index Index of the slot
- * @returns command slot name
- */
-function formatSlotName(type: LuaTweakType, index: number): string {
-    return index === 0 ? type : `${type}${index}`;
 }
 
 /** A slot being built, tracking sources and content separately */

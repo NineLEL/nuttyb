@@ -17,6 +17,7 @@ import {
 import { resolveLuaReference } from './interpolator';
 import type { LuaSource } from './packer';
 import { packCommandsIntoSections, packLuaSources } from './packer';
+import { formatSlotName } from './slot';
 import { decode } from '../encoders/base64';
 
 /** Result of validating a Base64URL-encoded tweak code */
@@ -104,14 +105,6 @@ function buildRenameCommand(config: Configuration): string {
     let cmd = `!rename Community NuttyB [${config.presetDifficulty}]`;
     if (name) cmd += ` [${name}]`;
     return cmd;
-}
-
-/**
- * Formats slot name for custom tweaks.
- * Uses numbered slots (1-9) since slot 0 is used by packed sources.
- */
-function formatSlotName(type: LuaTweakType, slotNumber: number): string {
-    return slotNumber === 0 ? type : `${type}${slotNumber}`;
 }
 
 /**
@@ -262,5 +255,3 @@ export function generateCommandSections(
         droppedCustomTweaks: dropped,
     };
 }
-
-export { type LUA_TWEAK_TYPES, type LuaTweakType } from '@/types/types';
