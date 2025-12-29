@@ -28,14 +28,28 @@ export interface PackingResult {
 /**
  * Checks if adding new content to existing slot would exceed the size limit.
  *
- * @param existing Existing slot content
- * @param addition New content to add
+ * @param existingSources Current source paths in the slot
+ * @param existingContent Current slot content
+ * @param newSourcePath Path of the new source to add
+ * @param newContent Content of the new source to add
  * @returns true if addition fits, false otherwise
  */
-function canFitInSlot(existing: string, addition: string): boolean {
-    const existingEncoded = encode(minify(existing + '\n\n')).length;
-    const additionEncoded = encode(minify(addition)).length;
-    return existingEncoded + additionEncoded <= MAX_SLOT_SIZE;
+function canFitInSlot(
+    existingSources: string[],
+    existingContent: string,
+    newSourcePath: string,
+    newContent: string
+): boolean {
+    const combinedSources = [...existingSources, newSourcePath];
+    const combinedContent = existingContent
+        ? existingContent + '\n\n' + newContent
+        : newContent;
+
+    const manifest = `-- Source: ${JSON.stringify(combinedSources)}`;
+    const minifiedContent = minify(combinedContent);
+    const encoded = encode(`${manifest}\n${minifiedContent}`);
+
+    return encoded.length <= MAX_SLOT_SIZE;
 }
 
 /**
@@ -83,14 +97,26 @@ export function packLuaSources(
     for (const source of sources) {
         const content = source.content;
 
-        if (currentSlot.content === '') {
+        if (
+            canFitInSlot(
+                currentSlot.sources,
+                currentSlot.content,
+                source.path,
+                content
+            )
+        ) {
+            // Source fits in current slot
+            if (currentSlot.content) {
+                currentSlot.content += '\n\n' + content;
+            } else {
+                currentSlot.content = content;
+            }
             currentSlot.sources.push(source.path);
-            currentSlot.content = content;
-        } else if (canFitInSlot(currentSlot.content, content)) {
-            currentSlot.sources.push(source.path);
-            currentSlot.content += '\n\n' + content;
         } else {
-            slots.push(currentSlot);
+            // Source doesn't fit - start new slot
+            if (currentSlot.content) {
+                slots.push(currentSlot);
+            }
             currentSlot = { sources: [source.path], content };
         }
     }

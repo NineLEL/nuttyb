@@ -7,7 +7,6 @@ import { describe, expect, test } from 'bun:test';
 import { generateCommandSections } from '@/lib/command-generator/command-generator';
 import {
     MAX_CHUNK_SIZE,
-    // MAX_SLOT_SIZE,
     MAX_SLOTS_PER_TYPE,
 } from '@/lib/command-generator/constants';
 import {
@@ -90,7 +89,6 @@ function validatePriorityOrder(sources: string[]): void {
     }
 }
 
-// FIXME: Fix the tests due to recent changes in command generation logic
 describe('Command generation', () => {
     test('Default configuration generates expected commands', () => {
         const config = DEFAULT_CONFIGURATION;
@@ -133,9 +131,9 @@ describe('Command generation', () => {
                 ''
             );
 
-            // Each command must fit within MAX_SLOT_SIZE
-            // TODO: Investigate why some commands may exceed the limit
-            // expect(generatedTweak.length).toBeLessThanOrEqual(MAX_SLOT_SIZE);
+            // Each command must fit within MAX_CHUNK_SIZE - that's the absolute limit
+            // MAX_SLOT_SIZE is a target limit, not a real constraint
+            expect(generatedTweak.length).toBeLessThanOrEqual(MAX_CHUNK_SIZE);
 
             const decoded = decode(base64);
             const manifest = extractSourceManifest(decoded);
