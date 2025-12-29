@@ -1,6 +1,14 @@
 import React from 'react';
 
-import { ActionIcon, Card, Flex, Stack, Text, Textarea } from '@mantine/core';
+import {
+    ActionIcon,
+    Card,
+    Flex,
+    Stack,
+    Text,
+    Textarea,
+    Tooltip,
+} from '@mantine/core';
 import { useClipboard } from '@mantine/hooks';
 import { IconCheck, IconCopy } from '@tabler/icons-react';
 
@@ -37,18 +45,20 @@ const DataItem: React.FC<DataItemProps> = ({
                             </Text>
                         )}
                     </Flex>
-                    <ActionIcon
-                        variant='subtle'
-                        size='sm'
-                        color={clipboard.copied ? 'green' : 'blue'}
-                        onClick={() => clipboard.copy(data)}
-                    >
-                        {clipboard.copied ? (
-                            <IconCheck {...ICON_STYLE} />
-                        ) : (
-                            <IconCopy {...ICON_STYLE} />
-                        )}
-                    </ActionIcon>
+                    <Tooltip label='Copy'>
+                        <ActionIcon
+                            variant='subtle'
+                            size='sm'
+                            color={clipboard.copied ? 'green' : 'blue'}
+                            onClick={() => clipboard.copy(data)}
+                        >
+                            {clipboard.copied ? (
+                                <IconCheck {...ICON_STYLE} />
+                            ) : (
+                                <IconCopy {...ICON_STYLE} />
+                            )}
+                        </ActionIcon>
+                    </Tooltip>
                 </Flex>
                 <Textarea
                     value={data}
