@@ -1,21 +1,4 @@
-import type { ValueMapping } from '../../types/types';
-
-/**
- * Maximum length for a single command or paste section.
- * This is the BAR game client's chat input limit.
- */
-export const MAX_COMMAND_LENGTH = 51_000;
-
-/**
- * Maximum slots per tweak type (tweakdefs, tweakdefs1-9 = 10 slots).
- */
-export const MAX_SLOTS_PER_TYPE = 10;
-
-/**
- * Target size for packed Lua slots (allows multiple files per slot).
- * Provides buffer below MAX_COMMAND_LENGTH for Base64 encoding overhead.
- */
-export const TARGET_SLOT_SIZE = 12_000;
+import type { ValueMapping } from '@/types/types';
 
 /**
  * Priority levels for Lua files (0 = highest priority, loads first).
@@ -23,35 +6,26 @@ export const TARGET_SLOT_SIZE = 12_000;
  */
 export const LUA_PRIORITIES: Record<string, number> = {
     // Priority 0: Core framework files
-    'lua/main-defs.lua': 0,
     'lua/main-units.lua': 0,
-
-    // Priority 1: Essential gameplay features
-    'lua/eco-t3.lua': 1,
-    'lua/builders-t3.lua': 1,
-    'lua/cross-faction-t2.lua': 1,
-
-    // Priority 2: Unit system tweaks
-    'lua/unit-launchers.lua': 2,
-    'lua/lrpc-rebalance.lua': 2,
-
-    // Priority 3: Faction-specific evocoms
-    'lua/evocom-arm.lua': 3,
-    'lua/evocom-cor.lua': 3,
-    'lua/evocom-leg.lua': 3,
-
-    // Priority 4: Advanced features
+    'lua/raptor-hp-template.lua': 0,
+    'lua/queen-hp-template.lua': 0,
+    'lua/evocom-arm.lua': 1,
+    'lua/evocom-cor.lua': 1,
+    'lua/evocom-leg.lua': 1,
+    'lua/main-defs.lua': 2,
+    'lua/builders-t3.lua': 3,
     'lua/defences-t4.lua': 4,
-    'lua/mini-bosses.lua': 4,
-
-    // Priority 5: Dynamic templates (HP multipliers)
-    'lua/raptor-hp-template.lua': 5,
-    'lua/queen-hp-template.lua': 5,
-
-    // Priority 6: Experimental/optional features
+    'lua/mini-bosses.lua': 5,
+    'lua/mega-nuke.lua': 5,
     'lua/wave-challenge.lua': 6,
-    'lua/mega-nuke.lua': 6,
-    'lua/air-rework-t4.lua': 6,
+    'lua/cross-faction-t2.lua': 7,
+    'lua/lrpc-rebalance.lua': 7,
+    'lua/eco-t3.lua': 8,
+    '~lua/eco-t4.lua': 9,
+    '~lua/rflrpc-rebalance.lua': 10,
+    '~lua/rflrpc-t4.lua': 11,
+    'lua/air-rework-t4.lua': 12,
+    'lua/unit-launchers.lua': 13,
 } as const;
 
 /**
@@ -62,6 +36,10 @@ export const DEFAULT_LUA_PRIORITY = 99;
 
 /**
  * Base commands always included for Raptors mode.
+ *
+ * Supports template syntax for dynamic values:
+ * - $variable$ : Required variable from configuration
+ * - $?content?$ : Optional section, removed if any variable inside is empty
  */
 export const BASE_COMMANDS = [
     '!preset coop',
@@ -77,8 +55,8 @@ export const BASE_COMMANDS = [
     '!experimentallegionfaction 1',
     '!experimentalshields bounceeverything',
     '!maxunits 10000',
-    '!multiplier_builddistance 1.5',
-    '!multiplier_buildpower 1',
+    '!bSet multiplier_builddistance $buildDistMult$',
+    '!bSet multiplier_buildpower $buildPowerMult$',
     '!multiplier_buildtimecost 1',
     '!multiplier_energyconversion 1',
     '!multiplier_energycost 1',
@@ -89,7 +67,7 @@ export const BASE_COMMANDS = [
     '!multiplier_metalcost 1',
     '!multiplier_metalextraction 1',
     '!multiplier_radarrange 1',
-    '!multiplier_resourceincome 1',
+    '!bSet multiplier_resourceincome $incomeMult$',
     '!multiplier_shieldpower 2',
     '!multiplier_turnrate 1',
     '!multiplier_weapondamage 1',
@@ -115,7 +93,8 @@ export const BASE_COMMANDS = [
     '!evocom 0',
     '!nowasting all',
     '!bSet unit_restrictions_nonukes 1',
-    '!bSet raptor_queen_count 8',
+    '!bSet raptor_queen_count $queenCount$',
+    '!rename Community NuttyB [$presetDifficulty$] $?[$lobbyName$]?$',
     '!balance',
 ] as const;
 
@@ -168,11 +147,14 @@ export const CONFIGURATION_MAPPING: ValueMapping = {
             },
         },
     },
-    extras: {
+    challenges: {
         description: 'Extra challenges',
         values: {
             None: undefined,
             'Mini Bosses': { tweakdefs: ['~lua/mini-bosses.lua'] },
+            'Mini Bosses Extended': {
+                tweakdefs: ['~lua/mini-bosses-extended.lua'],
+            },
             'Experimental Wave Challenge': {
                 tweakunits: ['~lua/wave-challenge.lua'],
             },
@@ -288,7 +270,6 @@ export const CONFIGURATION_MAPPING: ValueMapping = {
                 command: [
                     '!raptor_queentimemult 1.3',
                     '!raptor_spawncountmult 3',
-                    '!bSet raptor_queen_count 12',
                     '!raptor_firstwavesboost 4',
                     '!raptor_graceperiodmult 3',
                 ],
@@ -324,8 +305,27 @@ export const CONFIGURATION_MAPPING: ValueMapping = {
     },
     lobbyName: {
         description: 'Custom lobby name',
+        values: {},
+    },
+    isEcoT4: {
+        description: 'T4 Economy',
         values: {
-            '': undefined, // Empty string means no custom name - handled dynamically
+            true: { tweakdefs: ['~lua/eco-t4.lua'] },
+            false: undefined,
+        },
+    },
+    isRFLRPCRebalance: {
+        description: 'RFLRPC Rebalance',
+        values: {
+            true: { tweakunits: ['~lua/rflrpc-rebalance.lua'] },
+            false: undefined,
+        },
+    },
+    isRFLRPCT4: {
+        description: 'Epic RFLRPC',
+        values: {
+            true: { tweakdefs: ['~lua/rflrpc-t4.lua'] },
+            false: undefined,
         },
     },
     isMegaNuke: {
@@ -334,5 +334,22 @@ export const CONFIGURATION_MAPPING: ValueMapping = {
             true: { tweakunits: ['~lua/mega-nuke.lua'] },
             false: undefined,
         },
+    },
+    // Numeric settings - handled via command templates, not value mapping
+    incomeMult: {
+        description: 'Resource income multiplier',
+        values: {},
+    },
+    buildDistMult: {
+        description: 'Build distance multiplier',
+        values: {},
+    },
+    buildPowerMult: {
+        description: 'Build power multiplier',
+        values: {},
+    },
+    queenCount: {
+        description: 'Raptor queen count',
+        values: {},
     },
 } as const;

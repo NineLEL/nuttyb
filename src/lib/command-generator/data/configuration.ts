@@ -1,7 +1,8 @@
 export const PRESET_DIFFICULTIES = ['Easy', 'Medium', 'Hard'] as const;
-export const EXTRAS = [
+export const CHALLENGES = [
     'None',
     'Mini Bosses',
+    'Mini Bosses Extended',
     'Experimental Wave Challenge',
 ] as const;
 export const MAPS = [
@@ -26,24 +27,40 @@ export const START_OPTIONS = [
 ] as const;
 
 export type PresetDifficulty = (typeof PRESET_DIFFICULTIES)[number];
-export type Extras = (typeof EXTRAS)[number];
+export type Challenges = (typeof CHALLENGES)[number];
 export type GameMap = (typeof MAPS)[number];
 export type StartOption = (typeof START_OPTIONS)[number];
 
 export interface Configuration {
     presetDifficulty: PresetDifficulty;
-    extras: Extras;
+    challenges: Challenges;
     gameMap: GameMap;
     start: StartOption;
     lobbyName: string;
+    isEcoT4: boolean;
+    isRFLRPCRebalance: boolean;
+    isRFLRPCT4: boolean;
     isMegaNuke: boolean;
+    // Numeric multipliers
+    incomeMult: number;
+    buildDistMult: number;
+    buildPowerMult: number;
+    queenCount: number;
 }
 
 export const DEFAULT_CONFIGURATION: Configuration = {
     presetDifficulty: 'Medium',
-    extras: 'Mini Bosses',
+    challenges: 'Mini Bosses',
     gameMap: 'Full Metal Plate (12P)',
     start: 'No rush',
     lobbyName: '',
+    isEcoT4: true,
+    isRFLRPCRebalance: true,
+    isRFLRPCT4: true,
     isMegaNuke: false,
+    // Numeric multipliers
+    incomeMult: 1,
+    buildDistMult: 1.5,
+    buildPowerMult: 1,
+    queenCount: 12,
 };

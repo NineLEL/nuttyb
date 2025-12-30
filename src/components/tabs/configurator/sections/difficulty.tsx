@@ -6,7 +6,10 @@ import { Flex, List, Radio, Stack, Text, Title } from '@mantine/core';
 
 import { useConfiguratorContext } from '@/components/contexts/configurator-context';
 import { useCustomTweaksContext } from '@/components/contexts/custom-tweaks-context';
-import { PRESET_DIFFICULTIES, PresetDifficulty } from '@/lib/configuration';
+import {
+    PRESET_DIFFICULTIES,
+    PresetDifficulty,
+} from '@/lib/command-generator/data/configuration';
 
 const PRESET_DETAILS: Record<
     PresetDifficulty,
@@ -45,8 +48,6 @@ const DifficultySection: React.FC = () => {
 
     const handlePresetChange = (value: string) => {
         setProperty('presetDifficulty', value as PresetDifficulty);
-        setProperty('extras', 'None');
-        setProperty('isMegaNuke', false);
         clearEnabledTweaks();
     };
 
@@ -66,6 +67,16 @@ const DifficultySection: React.FC = () => {
                                 value={preset}
                                 radius='md'
                                 p='sm'
+                                bd={
+                                    preset === configuration.presetDifficulty
+                                        ? '1px solid var(--mantine-primary-color-filled)'
+                                        : undefined
+                                }
+                                bg={
+                                    preset === configuration.presetDifficulty
+                                        ? 'var(--mantine-primary-color-light)'
+                                        : undefined
+                                }
                             >
                                 <Stack gap='xs' style={{ flex: 1 }}>
                                     <Flex align='center' gap='md'>

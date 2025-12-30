@@ -2,11 +2,12 @@
 
 import React from 'react';
 
-import { Badge, Checkbox, Flex, Stack, Title } from '@mantine/core';
+import { Checkbox, Flex, Stack, Title } from '@mantine/core';
 
+import TypeBadge from '@/components/common/type-badge';
 import { useCustomTweaksContext } from '@/components/contexts/custom-tweaks-context';
 import { useTweakDataContext } from '@/components/contexts/tweak-data-context';
-import type { LuaTweakType } from '@/lib/commands/custom-tweaks';
+import type { LuaTweakType } from '@/types/types';
 
 const CustomTweaksSection: React.FC = () => {
     const { customTweaks, isEnabled, toggleTweak, enabledIds } =
@@ -50,17 +51,7 @@ const CustomTweaksSection: React.FC = () => {
                                 disabled={disabled}
                                 onChange={() => toggleTweak(tweak.id)}
                             />
-                            <Badge
-                                size='sm'
-                                variant='light'
-                                color={
-                                    tweak.type === 'tweakdefs'
-                                        ? 'blue'
-                                        : 'green'
-                                }
-                            >
-                                {tweak.type}
-                            </Badge>
+                            <TypeBadge type={tweak.type} />
                         </Flex>
                     );
                 })}
