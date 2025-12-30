@@ -76,7 +76,7 @@ do
                     i18n_en_humanname = 'Legendary Energy Converter',
                     i18n_en_tooltip = 'Converts 12000 energy into 264 metal per sec (non-explosive)',
                 },
-                name = factionNames[faction] .. 'Legendary Energy Converter',
+                name = 'Legendary Energy Converter',
                 buildpic = metalMakerDef.buildpic,
                 objectname = metalMakerDef.objectname,
                 footprintx = 6,
@@ -154,8 +154,7 @@ do
                     techlevel = 3,
                     unitgroup = 'energy',
                     usebuildinggrounddecal = true,
-                    i18n_en_humanname = factionNames[faction]
-                        .. 'Legendary Fusion Reactor',
+                    i18n_en_humanname = 'Legendary Fusion Reactor',
                     i18n_en_tooltip = 'Produces 72000 Energy (non-explosive)',
                 },
                 sfxtypes = {
