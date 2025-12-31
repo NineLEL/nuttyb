@@ -154,7 +154,7 @@ do
                 'armanni',
                 'armannit3',
                 'armlwall',
-                'legendary_pulsar',
+                'armannit4',
             },
             cor = {
                 'corfmd',
@@ -166,7 +166,7 @@ do
                 'cordoom',
                 'corhllllt',
                 'cormwall',
-                'legendary_bulwark',
+                'cordoomt4',
             },
             leg = {
                 'legabm',
@@ -176,7 +176,7 @@ do
                 'legbastion',
                 'legrwall',
                 'leglrpc',
-                'legendary_bastion',
+                'legbastiont4',
                 'legapopupdef',
                 'legdtf',
             },
