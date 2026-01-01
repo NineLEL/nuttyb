@@ -198,7 +198,7 @@
                 sprayangle = 256,
                 turret = true,
                 stockpiletime = 12,
-                proximitypriority = '',
+                proximitypriority = nil,
                 damage = {
                     default = 1,
                     shields = 100,
