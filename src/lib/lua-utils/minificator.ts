@@ -2,6 +2,11 @@ import luamin from 'lua-format';
 
 import { removeCommentsFromLine } from '@/lib/lua-utils/comment-handler';
 
+/**
+ * Minify Lua code using luamin with pre- and post-processing to handle comments.
+ * @param lua Code to be minified
+ * @returns Minified code
+ */
 export function minify(lua: string): string {
     // Remove comments from input before minifying to avoid luafmt header inclusion.
     let data = lua;

@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import {
+    Checkbox,
     Flex,
     Radio,
     SimpleGrid,
@@ -13,33 +14,34 @@ import {
 } from '@mantine/core';
 
 import { decode, encode } from '@/lib/encoders/base64';
+import { beautify } from '@/lib/lua-utils/beautifier';
+import { minify } from '@/lib/lua-utils/minificator';
 
 type Mode = 'encode' | 'decode';
 
 export default function Page() {
     const [mode, setMode] = useState<Mode>('encode');
+    const [isFormatterEnabled, setFormatterEnabled] = useState<boolean>(true);
     const [inputText, setInputText] = useState<string>('');
-    const [outputText, setOutputText] = useState<string>('');
 
-    const handleInputTextChange = useCallback(
-        (input: string) => {
-            setInputText(input);
-            switch (mode) {
-                case 'encode':
-                    setOutputText(encode(input));
-                    break;
-                case 'decode':
-                    setOutputText(decode(input));
-                    break;
-            }
-        },
-        [mode]
-    );
+    const outputText = useMemo(() => {
+        if (!inputText) return '';
+
+        switch (mode) {
+            case 'encode':
+                return encode(
+                    isFormatterEnabled ? minify(inputText) : inputText
+                );
+            case 'decode':
+                return isFormatterEnabled
+                    ? beautify(decode(inputText))
+                    : decode(inputText);
+        }
+    }, [inputText, mode, isFormatterEnabled]);
 
     const handleModeChange = useCallback((newMode: string) => {
         setMode(newMode as Mode);
         setInputText('');
-        setOutputText('');
     }, []);
 
     return (
@@ -61,13 +63,22 @@ export default function Page() {
                     </Flex>
                 </Radio.Group>
 
+                <Checkbox
+                    label='Enable formatter'
+                    description='Minify Lua before encoding and beautify after decoding'
+                    checked={isFormatterEnabled}
+                    onChange={(event) =>
+                        setFormatterEnabled(event.currentTarget.checked)
+                    }
+                />
+
                 <SimpleGrid cols={2}>
                     <Textarea
                         label='Input'
                         placeholder='Your text goes here'
                         value={inputText}
                         onChange={(event) =>
-                            handleInputTextChange(event.currentTarget.value)
+                            setInputText(event.currentTarget.value)
                         }
                         autosize
                         maxRows={17}
