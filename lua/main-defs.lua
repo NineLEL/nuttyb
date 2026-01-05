@@ -26,63 +26,64 @@ function addWeapon(h, i, j)
     end
 end
 
-for _, shieldedUnit in ipairs({
-    'armcom',
-    'armcomlvl2',
-    'armcomlvl3',
-    'armcomlvl4',
-    'corcom',
-    'corcomlvl2',
-    'corcomlvl3',
-    'corcomlvl4',
-    'legcom',
-    'legcomlvl2',
-    'legcomlvl3',
-    'legcomlvl4',
-    'legcomlvl5',
-}) do
-    addWeapon(shieldedUnit, {
-        avoidfeature = false,
-        craterareaofeffect = 0,
-        craterboost = 0,
-        cratermult = 0,
-        edgeeffectiveness = 0.15,
-        name = 'PlasmaRepulsor',
-        range = 50,
-        soundhitwet = 'sizzle',
-        weapontype = 'Shield',
-        damage = {
-            default = 100,
-        },
-        shield = {
-            alpha = 0.15,
-            armortype = 'shields',
-            energyuse = 1,
-            force = 2.5,
-            intercepttype = 1,
-            power = 500,
-            powerregen = 3,
-            powerregenenergy = 3,
-            radius = 100,
-            repulser = true,
-            smart = true,
-            startingpower = 100,
-            visiblerepulse = true,
-            badcolor = {
-                1,
-                0.2,
-                0.2,
-                0.2,
-            },
-            goodcolor = {
-                0.2,
-                1,
-                0.2,
-                0.17,
-            },
-        },
-    })
-end
+-- Removed repulsor shields from commanders due to desync error caused by the engine
+-- for _, shieldedUnit in ipairs({
+--     'armcom',
+--     'armcomlvl2',
+--     'armcomlvl3',
+--     'armcomlvl4',
+--     'corcom',
+--     'corcomlvl2',
+--     'corcomlvl3',
+--     'corcomlvl4',
+--     'legcom',
+--     'legcomlvl2',
+--     'legcomlvl3',
+--     'legcomlvl4',
+--     'legcomlvl5',
+-- }) do
+--     addWeapon(shieldedUnit, {
+--         avoidfeature = false,
+--         craterareaofeffect = 0,
+--         craterboost = 0,
+--         cratermult = 0,
+--         edgeeffectiveness = 0.15,
+--         name = 'PlasmaRepulsor',
+--         range = 50,
+--         soundhitwet = 'sizzle',
+--         weapontype = 'Shield',
+--         damage = {
+--             default = 100,
+--         },
+--         shield = {
+--             alpha = 0.15,
+--             armortype = 'shields',
+--             energyuse = 1,
+--             force = 2.5,
+--             intercepttype = 1,
+--             power = 500,
+--             powerregen = 3,
+--             powerregenenergy = 3,
+--             radius = 100,
+--             repulser = true,
+--             smart = true,
+--             startingpower = 100,
+--             visiblerepulse = true,
+--             badcolor = {
+--                 1,
+--                 0.2,
+--                 0.2,
+--                 0.2,
+--             },
+--             goodcolor = {
+--                 0.2,
+--                 1,
+--                 0.2,
+--                 0.17,
+--             },
+--         },
+--     })
+-- end
 
 for name, def in pairs(unitDefs) do
     if string.sub(name, 1, 24) == 'raptor_air_fighter_basic' then
