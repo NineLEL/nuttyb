@@ -7,11 +7,12 @@ import { Flex } from '@mantine/core';
 import { useCustomTweaksContext } from '@/components/contexts/custom-tweaks-context';
 import { EditorPanel } from '@/components/tabs/editor/editor-panel';
 import { EditorSidebar } from '@/components/tabs/editor/editor-sidebar';
+import { useEditorContent } from '@/hooks/use-editor-content';
+import { useEditorSelection } from '@/hooks/use-editor-selection';
+import { useEditorSizeCalculations } from '@/hooks/use-editor-size-calculations';
 import { useEditorStorage } from '@/hooks/use-editor-storage';
 import { useSlotContents } from '@/hooks/use-slot-contents';
 import type { Configuration } from '@/lib/command-generator/data/configuration';
-import { encode } from '@/lib/encoders/base64';
-import { minify } from '@/lib/lua-utils/minificator';
 import type { LuaFile } from '@/types/types';
 
 interface LuaEditorProps {
@@ -48,89 +49,33 @@ const LuaEditor: React.FC<LuaEditorProps> = ({ luaFiles, configuration }) => {
     } = useEditorStorage();
 
     // Selection state
-    const [selectedFile, setSelectedFile] = useState<string | null>(null);
-    const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+    const { selectedFile, selectedSlot, setSelectedFile, setSelectedSlot } =
+        useEditorSelection({ luaFolderFiles, slotContents });
 
-    // Auto-select first file/slot
-    React.useEffect(() => {
-        if (!selectedFile && luaFolderFiles.length > 0) {
-            setSelectedFile(luaFolderFiles[0].path);
-        }
-    }, [selectedFile, luaFolderFiles]);
+    // Content management
+    const {
+        getCurrentContent,
+        getSlotContent,
+        isFileModified,
+        isSlotModified,
+        handleFileChange,
+        handleSlotChange,
+        resetFile,
+        resetSlot,
+    } = useEditorContent({
+        luaFolderFiles,
+        slotContents,
+        editedFiles,
+        editedSlots,
+        setEditedFiles,
+        setEditedSlots,
+    });
 
-    React.useEffect(() => {
-        if (!selectedSlot && slotContents.length > 0) {
-            setSelectedSlot(slotContents[0].slotName);
-        }
-    }, [selectedSlot, slotContents]);
-
-    // Content getters
-    const getCurrentContent = useCallback(
-        (path: string): string => {
-            const edited = editedFiles.get(path);
-            if (edited) return edited.currentData;
-            const original = luaFolderFiles.find((f) => f.path === path);
-            return original?.data ?? '';
-        },
-        [editedFiles, luaFolderFiles]
-    );
-
-    const getSlotContent = useCallback(
-        (slotName: string): string => {
-            const edited = editedSlots.get(slotName);
-            if (edited) return edited.currentData;
-            const slot = slotContents.find((s) => s.slotName === slotName);
-            return slot?.content ?? '';
-        },
-        [editedSlots, slotContents]
-    );
-
-    // Modification checks
-    const isFileModified = useCallback(
-        (path: string): boolean => {
-            const edited = editedFiles.get(path);
-            if (!edited) return false;
-            return edited.currentData !== edited.originalData;
-        },
-        [editedFiles]
-    );
-
-    const isSlotModified = useCallback(
-        (slotName: string): boolean => {
-            const edited = editedSlots.get(slotName);
-            if (!edited) return false;
-            return edited.currentData !== edited.originalData;
-        },
-        [editedSlots]
-    );
-
-    // Slot size calculation
-    const getSlotB64Size = useCallback(
-        (slotName: string): number => {
-            try {
-                const content = getSlotContent(slotName);
-                return encode(minify(content.trim())).length;
-            } catch {
-                const content = getSlotContent(slotName);
-                return encode(content.trim()).length;
-            }
-        },
-        [getSlotContent]
-    );
-
-    // File size calculation
-    const getFileB64Size = useCallback(
-        (path: string): number => {
-            try {
-                const content = getCurrentContent(path);
-                return encode(minify(content.trim())).length;
-            } catch {
-                const content = getCurrentContent(path);
-                return encode(content.trim()).length;
-            }
-        },
-        [getCurrentContent]
-    );
+    // Size calculations
+    const { getSlotB64Size, getFileB64Size } = useEditorSizeCalculations({
+        getCurrentContent,
+        getSlotContent,
+    });
 
     // Editor change handler
     const handleEditorChange = useCallback(
@@ -138,69 +83,18 @@ const LuaEditor: React.FC<LuaEditorProps> = ({ luaFiles, configuration }) => {
             if (value === undefined) return;
 
             if (viewMode === 'sources' && selectedFile) {
-                const original = luaFolderFiles.find(
-                    (f) => f.path === selectedFile
-                );
-                if (!original) return;
-
-                setEditedFiles((prev) => {
-                    const next = new Map(prev);
-                    next.set(selectedFile, {
-                        path: selectedFile,
-                        originalData: original.data,
-                        currentData: value,
-                    });
-                    return next;
-                });
+                handleFileChange(selectedFile, value);
             } else if (viewMode === 'slots' && selectedSlot) {
-                const original = slotContents.find(
-                    (s) => s.slotName === selectedSlot
-                );
-                if (!original) return;
-
-                setEditedSlots((prev) => {
-                    const next = new Map(prev);
-                    next.set(selectedSlot, {
-                        path: selectedSlot,
-                        originalData: original.content,
-                        currentData: value,
-                    });
-                    return next;
-                });
+                handleSlotChange(selectedSlot, value);
             }
         },
         [
             viewMode,
             selectedFile,
             selectedSlot,
-            luaFolderFiles,
-            slotContents,
-            setEditedFiles,
-            setEditedSlots,
+            handleFileChange,
+            handleSlotChange,
         ]
-    );
-
-    // Reset handlers
-    const resetFile = useCallback(
-        (path: string) => {
-            setEditedFiles((prev) => {
-                const next = new Map(prev);
-                next.delete(path);
-                return next;
-            });
-        },
-        [setEditedFiles]
-    );
-
-    const resetSlot = useCallback(
-        (slotName: string) => {
-            setEditedSlots((prev) => {
-                const next = new Map(prev);
-                next.delete(slotName);
-                return next;
-            });
-        },
-        [setEditedSlots]
     );
 
     // Download handler
@@ -238,20 +132,17 @@ const LuaEditor: React.FC<LuaEditorProps> = ({ luaFiles, configuration }) => {
               ? isSlotModified(selectedSlot)
               : false;
 
-    const currentSlotInfo =
-        viewMode === 'slots' && selectedSlot
-            ? (() => {
-                  const slot = slotContents.find(
-                      (s) => s.slotName === selectedSlot
-                  );
-                  return slot
-                      ? {
-                            type: slot.type,
-                            slotSize: getSlotB64Size(selectedSlot),
-                        }
-                      : null;
-              })()
+    const currentSlotInfo = useMemo(() => {
+        if (viewMode !== 'slots' || !selectedSlot) return null;
+
+        const slot = slotContents.find((s) => s.slotName === selectedSlot);
+        return slot
+            ? {
+                  type: slot.type,
+                  slotSize: getSlotB64Size(selectedSlot),
+              }
             : null;
+    }, [viewMode, selectedSlot, slotContents, getSlotB64Size]);
 
     const handleReset = () => {
         if (viewMode === 'sources' && selectedFile) {

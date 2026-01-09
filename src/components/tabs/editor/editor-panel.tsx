@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { Box, Flex, Paper, Stack, Text } from '@mantine/core';
 import { useClipboard } from '@mantine/hooks';
@@ -40,16 +40,53 @@ export function EditorPanel({
     const clipboard = useClipboard({ timeout: 2000 });
     const base64Clipboard = useClipboard({ timeout: 2000 });
 
+    // Track editor instance and scroll positions
+    const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    const scrollPositionsRef = useRef<
+        Map<string, { top: number; left: number }>
+    >(new Map());
+    const previousTitleRef = useRef<string | null>(null);
+
+    // Save scroll position when switching files
+    useEffect(() => {
+        if (
+            previousTitleRef.current &&
+            editorRef.current &&
+            previousTitleRef.current !== currentTitle
+        ) {
+            const scrollTop = editorRef.current.getScrollTop();
+            const scrollLeft = editorRef.current.getScrollLeft();
+            scrollPositionsRef.current.set(previousTitleRef.current, {
+                top: scrollTop,
+                left: scrollLeft,
+            });
+        }
+        previousTitleRef.current = currentTitle;
+    }, [currentTitle]);
+
+    // Restore scroll position when content changes
+    useEffect(() => {
+        if (editorRef.current && currentTitle) {
+            const savedPosition = scrollPositionsRef.current.get(currentTitle);
+            if (savedPosition) {
+                // Use setTimeout to ensure content is loaded
+                setTimeout(() => {
+                    editorRef.current?.setScrollTop(savedPosition.top);
+                    editorRef.current?.setScrollLeft(savedPosition.left);
+                }, 0);
+            } else {
+                // Reset to top for new files
+                setTimeout(() => {
+                    editorRef.current?.setScrollTop(0);
+                    editorRef.current?.setScrollLeft(0);
+                }, 0);
+            }
+        }
+    }, [currentTitle, currentContent]);
+
     const handleEditorMount: OnMount = useCallback(
         (editor: editor.IStandaloneCodeEditor) => {
-            editor.updateOptions({
-                minimap: { enabled: true },
-                fontSize: 14,
-                wordWrap: 'on',
-                lineNumbers: 'on',
-                folding: true,
-                bracketPairColorization: { enabled: true },
-            });
+            editorRef.current = editor;
         },
         []
     );
@@ -134,6 +171,7 @@ export function EditorPanel({
                             folding: true,
                             scrollBeyondLastLine: false,
                             automaticLayout: true,
+                            bracketPairColorization: { enabled: true },
                         }}
                     />
                 </Box>

@@ -156,7 +156,7 @@ export function EditorSidebar({
                         {viewMode === 'sources' && (
                             <Menu position='bottom-start' shadow='md'>
                                 <Menu.Target>
-                                    <UnstyledButton>
+                                    <UnstyledButton aria-label='Sort files'>
                                         <IconArrowsSort
                                             size={14}
                                             style={{ cursor: 'pointer' }}
