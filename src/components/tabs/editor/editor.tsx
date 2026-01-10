@@ -15,12 +15,12 @@ import { useSlotContents } from '@/hooks/use-slot-contents';
 import type { Configuration } from '@/lib/command-generator/data/configuration';
 import type { LuaFile } from '@/types/types';
 
+import { ViewMode } from './types';
+
 interface LuaEditorProps {
     luaFiles: LuaFile[];
     configuration: Configuration;
 }
-
-type ViewMode = 'sources' | 'slots';
 
 export const LuaEditor: React.FC<LuaEditorProps> = ({
     luaFiles,

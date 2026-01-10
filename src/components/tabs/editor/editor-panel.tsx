@@ -11,7 +11,7 @@ import { encode } from '@/lib/encoders/base64';
 import { minify } from '@/lib/lua-utils/minificator';
 import type { LuaTweakType } from '@/types/types';
 
-type ViewMode = 'sources' | 'slots';
+import { ViewMode } from './types';
 
 interface EditorPanelProps {
     viewMode: ViewMode;

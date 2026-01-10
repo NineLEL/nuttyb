@@ -13,7 +13,7 @@ import { ICON_STYLE } from '@/components/common/icon-style';
 import { MAX_SLOT_SIZE } from '@/lib/command-generator/constants';
 import type { LuaTweakType } from '@/types/types';
 
-type ViewMode = 'sources' | 'slots';
+import { ViewMode } from './types';
 
 interface EditorToolbarProps {
     viewMode: ViewMode;

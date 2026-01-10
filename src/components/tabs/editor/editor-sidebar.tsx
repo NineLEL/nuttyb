@@ -21,7 +21,7 @@ import { SlotContent } from '@/hooks/use-slot-contents';
 import { EDITOR_SORT_MODE_STORAGE_KEY } from '@/lib/configuration-storage/keys';
 import type { LuaFile, LuaTweakType } from '@/types/types';
 
-type ViewMode = 'sources' | 'slots';
+import { ViewMode } from './types';
 
 interface EditorSidebarProps {
     viewMode: ViewMode;
