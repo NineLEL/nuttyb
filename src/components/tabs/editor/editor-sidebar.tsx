@@ -1,19 +1,20 @@
 import { useMemo, useState } from 'react';
 
 import {
-    Badge,
-    Group,
+    ActionIcon,
+    Card,
+    Center,
+    Flex,
     Menu,
-    Paper,
     ScrollArea,
     SegmentedControl,
     Stack,
     Text,
     TextInput,
-    UnstyledButton,
 } from '@mantine/core';
 import { IconArrowsSort, IconSearch } from '@tabler/icons-react';
 
+import { ICON_SIZE_MD } from '@/components/common/icon-style';
 import { FileListItem } from '@/components/tabs/editor/file-list-item';
 import { SlotListItem } from '@/components/tabs/editor/slot-list-item';
 import { useLocalStorage } from '@/hooks/use-local-storage';
@@ -150,71 +151,60 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = ({
     }, [filteredSlots, getSlotSize]);
 
     return (
-        <Paper withBorder p='sm' style={{ width: 280, flexShrink: 0 }}>
-            <Stack gap='sm' style={{ height: '100%' }}>
+        <Card withBorder p='sm' w='280px' bg='dark.7'>
+            <Stack gap='sm' h='100%'>
                 <SegmentedControl
                     size='xs'
                     value={viewMode}
                     onChange={(value) => onViewModeChange(value as ViewMode)}
                     data={[
-                        { label: 'Source Files', value: 'sources' },
                         { label: 'Slot Content', value: 'slots' },
+                        { label: 'Source Files', value: 'sources' },
                     ]}
                 />
 
-                <Group justify='space-between'>
-                    <Group gap='xs'>
-                        <Text fw={600} size='sm'>
-                            {viewMode === 'sources' ? 'Files' : 'Slots'}
-                        </Text>
-                        {viewMode === 'sources' && (
-                            <Menu position='bottom-start' shadow='md'>
-                                <Menu.Target>
-                                    <UnstyledButton aria-label='Sort files'>
-                                        <IconArrowsSort
-                                            size={14}
-                                            style={{ cursor: 'pointer' }}
-                                        />
-                                    </UnstyledButton>
-                                </Menu.Target>
-                                <Menu.Dropdown>
-                                    <Menu.Item
-                                        onClick={() => setSortMode('alphabet')}
-                                    >
-                                        Alphabet
-                                    </Menu.Item>
-                                    <Menu.Item
-                                        onClick={() => setSortMode('tweaktype')}
-                                    >
-                                        Tweak Type
-                                    </Menu.Item>
-                                </Menu.Dropdown>
-                            </Menu>
-                        )}
-                    </Group>
-                    {viewMode === 'sources' && modifiedFileCount > 0 && (
-                        <Badge size='sm' color='yellow'>
-                            {modifiedFileCount} modified
-                        </Badge>
+                <Flex w='100%' gap='xs' align='center'>
+                    <TextInput
+                        placeholder={
+                            viewMode === 'sources'
+                                ? 'Search files...'
+                                : 'Search slots...'
+                        }
+                        size='xs'
+                        w='100%'
+                        leftSection={<IconSearch {...ICON_SIZE_MD} />}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.currentTarget.value)}
+                    />
+                    {viewMode === 'sources' && (
+                        <Menu shadow='md'>
+                            <Menu.Target>
+                                <ActionIcon
+                                    variant='subtle'
+                                    size='md'
+                                    aria-label='Sort files'
+                                >
+                                    <IconArrowsSort
+                                        {...ICON_SIZE_MD}
+                                        style={{ cursor: 'pointer' }}
+                                    />
+                                </ActionIcon>
+                            </Menu.Target>
+                            <Menu.Dropdown>
+                                <Menu.Item
+                                    onClick={() => setSortMode('alphabet')}
+                                >
+                                    Alphabet
+                                </Menu.Item>
+                                <Menu.Item
+                                    onClick={() => setSortMode('tweaktype')}
+                                >
+                                    Tweak Type
+                                </Menu.Item>
+                            </Menu.Dropdown>
+                        </Menu>
                     )}
-                    {viewMode === 'slots' && modifiedSlotCount > 0 && (
-                        <Badge size='sm' color='yellow'>
-                            {modifiedSlotCount} modified
-                        </Badge>
-                    )}
-                </Group>
-
-                <TextInput
-                    placeholder={
-                        viewMode === 'sources'
-                            ? 'Search files...'
-                            : 'Search slots...'
-                    }
-                    size='xs'
-                    leftSection={<IconSearch size={14} />}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.currentTarget.value)}
-                />
+                </Flex>
 
                 <ScrollArea style={{ flex: 1 }}>
                     <Stack gap={2}>
@@ -255,7 +245,18 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = ({
                               ))}
                     </Stack>
                 </ScrollArea>
+
+                {((modifiedFileCount > 0 && viewMode === 'sources') ||
+                    (modifiedSlotCount > 0 && viewMode === 'slots')) && (
+                    <Card.Section inheritPadding pb='sm' pt='xs'>
+                        <Center>
+                            <Text size='sm' c='orange' style={{ padding: 0 }}>
+                                {`${viewMode === 'sources' ? modifiedFileCount : modifiedSlotCount} modified`}
+                            </Text>
+                        </Center>
+                    </Card.Section>
+                )}
             </Stack>
-        </Paper>
+        </Card>
     );
 };
