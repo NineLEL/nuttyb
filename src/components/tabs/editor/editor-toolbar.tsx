@@ -9,7 +9,8 @@ import {
     IconTransform,
 } from '@tabler/icons-react';
 
-import { ICON_STYLE } from '@/components/common/icon-style';
+import { ICON_SIZE_MD, ICON_STYLE } from '@/components/common/icon-style';
+import { TweakTypeBadge } from '@/components/common/type-badge';
 import { MAX_SLOT_SIZE } from '@/lib/command-generator/constants';
 import type { LuaTweakType } from '@/types/types';
 
@@ -47,28 +48,22 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
         <Group gap='xs' justify='space-between' style={{ width: '100%' }}>
             <Group gap='xs'>
                 {viewMode === 'sources' ? (
-                    <IconCode size={16} />
+                    <IconCode
+                        {...ICON_SIZE_MD}
+                        color={isModified ? 'orange' : undefined}
+                    />
                 ) : (
-                    <IconPackage size={16} />
+                    <IconPackage
+                        {...ICON_SIZE_MD}
+                        color={isModified ? 'orange' : undefined}
+                    />
                 )}
-                <Text size='sm' fw={500}>
+                <Text size='sm' fw={500} c={isModified ? 'orange' : undefined}>
                     {currentTitle}
                 </Text>
-                {isModified && (
-                    <Badge size='xs' color='yellow'>
-                        Modified
-                    </Badge>
-                )}
                 {slotInfo && (
                     <>
-                        <Badge
-                            size='xs'
-                            color={
-                                slotInfo.type === 'tweakdefs' ? 'cyan' : 'grape'
-                            }
-                        >
-                            {slotInfo.type}
-                        </Badge>
+                        <TweakTypeBadge type={slotInfo.type} />
                         <Badge
                             size='xs'
                             color={
