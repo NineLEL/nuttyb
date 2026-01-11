@@ -58,7 +58,11 @@ export const SlotListItem: React.FC<SlotListItemProps> = ({
                 <Tooltip
                     label={`${sources.length} tweak(s) mapped to this slot`}
                 >
-                    <Badge size='xs' color={TWEAK_COLOR_MAP[slotType]}>
+                    <Badge
+                        size='xs'
+                        color={TWEAK_COLOR_MAP[slotType]}
+                        variant='light'
+                    >
                         {sources.length}
                     </Badge>
                 </Tooltip>
