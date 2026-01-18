@@ -78,15 +78,13 @@ do
         addNewMergedUnitDef(faction .. 'nanotct3', t4NanoTurret, {
             metalcost = 11000,
             energycost = 186000,
-            builddistance = 450,
+            builddistance = 750,
             buildtime = 320000,
             health = 26400,
             workertime = 5700,
             customparams = {
-                techlevel = 4,
-                unitgroup = 'buildert4',
-                i18n_en_humanname = 'Legendary Construction Turret',
-                i18n_en_tooltip = 'Ultimate BUILDPOWER! Legendary quality.',
+                i18n_en_humanname = 'T4 Construction Turret',
+                i18n_en_tooltip = 'Ultimate BUILDPOWER! For the legendary commander',
             },
             buildoptions = t4AideBuildoptions,
         })
@@ -130,7 +128,7 @@ do
                 techlevel = 4,
                 unitgroup = 'buildert4',
                 i18n_en_humanname = 'Legendary Air Construction Aide',
-                i18n_en_tooltip = 'The legendary air builder for the chosen few.',
+                i18n_en_tooltip = 'The ultimate air builder for the ultimate commander',
             },
             buildoptions = t4AideBuildoptions,
         })

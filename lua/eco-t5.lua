@@ -35,14 +35,11 @@ do
                 health = 480000,
                 footprintx = 16,
                 footprintz = 16,
-                -- Extreme Hazard
-                explodeas = 'BANTHA_BLAST',
-                selfdestructas = 'BANTHA_BLAST',
                 customparams = {
                     techlevel = 5,
                     unitgroup = 'energy',
                     i18n_en_humanname = 'Mythical Fusion Reactor',
-                    i18n_en_tooltip = 'Produces 180,000 Energy. WARNING: EXTREME HAZARD UPON DESTRUCTION!',
+                    i18n_en_tooltip = 'Produces 180,000 Energy (non-explosive)',
                 },
             })
         end

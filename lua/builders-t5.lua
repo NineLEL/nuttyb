@@ -62,7 +62,7 @@ do
         addNewMergedUnitDef(t4Turret, t5NanoTurret, {
             metalcost = 32000,
             energycost = 520000,
-            builddistance = 400,
+            builddistance = 1000,
             buildtime = 640000,
             health = 85000,
             workertime = 17100,
@@ -123,16 +123,13 @@ do
         ensureBuildOption(t4Aide, t5Aide)
         ensureBuildOption(t4Aide, t5AirAide)
         ensureBuildOption(t4Aide, t5NanoTurret)
-        ensureBuildOption(t4Aide, t5Fusion)
 
         ensureBuildOption(t4AirAide, t5Aide)
         ensureBuildOption(t4AirAide, t5AirAide)
         ensureBuildOption(t4AirAide, t5NanoTurret)
-        ensureBuildOption(t4AirAide, t5Fusion)
 
         ensureBuildOption(t4Turret, t5Aide)
         ensureBuildOption(t4Turret, t5AirAide)
         ensureBuildOption(t4Turret, t5NanoTurret)
-        ensureBuildOption(t4Turret, t5Fusion)
     end
 end
