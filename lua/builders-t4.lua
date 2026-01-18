@@ -72,18 +72,6 @@ do
         if unitDefs[t4EnergyStore] then
             table.insert(t4AideBuildoptions, t4EnergyStore)
         end
-        local t5Aide = faction .. 't5aide'
-        if unitDefs[t5Aide] then
-            table.insert(t4AideBuildoptions, t5Aide)
-        end
-        local t5AirAide = faction .. 't5airaide'
-        if unitDefs[t5AirAide] then
-            table.insert(t4AideBuildoptions, t5AirAide)
-        end
-        local t5Turret = faction .. 'nanotct5'
-        if unitDefs[t5Turret] then
-            table.insert(t4AideBuildoptions, t5Turret)
-        end
 
         -- T4 Construction Turret
         local t4NanoTurret = faction .. 'nanotct4'
