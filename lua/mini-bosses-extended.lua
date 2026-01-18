@@ -56,7 +56,7 @@ do
     local linearPart = math.max(0, mqNumQueens - queenThreshold)
     local baseQueenAnger = exponentialPart + linearPart
     local mqDoomAnger = math.ceil(mqDoomAngerScale * baseQueenAnger)
-    local mqAngerBoss = mqTimeMult * 100 + mqDoomAnger
+    local mqAngerBoss = mqTimeMult * 75 + mqDoomAnger
     local maxDoombringers =
         math.max(3, scaledMax(math.floor((21 * mqNumQueens + 36) / 19)))
 
@@ -109,6 +109,16 @@ do
         customparams = {
             i18n_en_humanname = 'Arm Com Boss',
             i18n_en_tooltip = 'Swift and sharp, a noble among raptors.',
+        },
+    })
+
+    newUnit('corcomboss', 'raptor_corcomboss', {
+        name = 'Cortex Com Boss',
+        icontype = 'corcomboss',
+        health = baseHealth * 6,
+        customparams = {
+            i18n_en_humanname = 'Cortex Com Boss',
+            i18n_en_tooltip = 'Brutal and relentless, a lord of destruction.',
         },
     })
 
@@ -387,6 +397,32 @@ do
             },
         },
 
+        raptor_corcomboss = {
+            explodeas = 'ScavComBossExplo',
+            maxthisunit = maxDoombringers,
+            customparams = pveSquad(mqAnger[1], 1000, 'berserk'),
+            weapondefs = {
+                corcomlaserboss = {
+                    name = 'Cortex Laser Boss',
+                    reloadtime = 0,
+                    rgbcolor = '1 0.1 0',
+                    range = 1250,
+                    speed = 25,
+                    damage = {
+                        default = 4800,
+                        commanders = 2400,
+                        shield = 5000,
+                    },
+                },
+            },
+            weapons = {
+                [1] = {
+                    def = 'corcomlaserboss',
+                    badtargetcategory = 'VTOL OBJECT',
+                },
+            },
+        },
+
         raptor_mama_ba = {
             maxthisunit = scaledMax(4),
             customparams = pveSquad(55, mqAnger[3] - 1, 'berserk'),
@@ -442,6 +478,7 @@ do
         raptor_consort = 45000,
         raptor_doombringer = 90000,
         raptor_armcomboss = 45000,
+        raptor_corcomboss = 45000,
     }
 
     -- Post-processing function to apply metal costs
