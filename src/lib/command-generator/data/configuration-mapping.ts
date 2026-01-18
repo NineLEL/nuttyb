@@ -14,6 +14,7 @@ export const LUA_PRIORITIES: Record<string, number> = {
     'lua/evocom-leg.lua': 1,
     'lua/main-defs.lua': 2,
     'lua/builders-t3.lua': 3,
+    'lua/builders-t4.lua': 3,
     'lua/defences-t4.lua': 4,
     'lua/mini-bosses.lua': 5,
     'lua/mega-nuke.lua': 5,
@@ -106,6 +107,7 @@ export const BASE_TWEAKS = {
         '~lua/main-defs.lua',
         '~lua/eco-t3.lua',
         '~lua/builders-t3.lua',
+        '~lua/builders-t4.lua',
         '~lua/unit-launchers.lua',
     ],
     tweakunits: [
