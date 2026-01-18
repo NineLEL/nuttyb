@@ -55,6 +55,10 @@ do
         if unitDefs[t4Fusion] then
             table.insert(t4AideBuildoptions, t4Fusion)
         end
+        local t3Mex = faction .. 'mohot3'
+        if unitDefs[t3Mex] then
+            table.insert(t4AideBuildoptions, t3Mex)
+        end
 
         -- T4 Construction Turret
         local t4NanoTurret = faction .. 'nanotct4'

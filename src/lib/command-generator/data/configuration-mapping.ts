@@ -22,6 +22,7 @@ export const LUA_PRIORITIES: Record<string, number> = {
     'lua/cross-faction-t2.lua': 7,
     'lua/lrpc-rebalance.lua': 7,
     'lua/eco-t3.lua': 8,
+    'lua/eco-mex-t3.lua': 8,
     '~lua/eco-t4.lua': 9,
     '~lua/rflrpc-rebalance.lua': 10,
     '~lua/rflrpc-t4.lua': 11,
@@ -106,6 +107,7 @@ export const BASE_TWEAKS = {
     tweakdefs: [
         '~lua/main-defs.lua',
         '~lua/eco-t3.lua',
+        '~lua/eco-mex-t3.lua',
         '~lua/builders-t3.lua',
         '~lua/builders-t4.lua',
         '~lua/unit-launchers.lua',

@@ -56,7 +56,7 @@ do
                 energycost = 231150,
                 buildtime = 142800,
                 health = 53560,
-                maxthisunit = 3,
+                maxthisunit = 20,
                 icontype = 'armuwadves',
                 name = factionPrefix[faction] .. 'T3 Metal Storage',
                 customparams = {
@@ -77,7 +77,7 @@ do
                 buildtime = 93380,
                 health = 49140,
                 icontype = 'armuwadves',
-                maxthisunit = 3,
+                maxthisunit = 20,
                 name = factionPrefix[faction] .. 'T3 Energy Storage',
                 customparams = {
                     i18n_en_humanname = 'T3 Hardened Energy Storage',
@@ -127,6 +127,7 @@ do
                 isLeg and 'legdeflector' or faction .. 'gate',
                 isLeg and 'legforti' or faction .. 'fort',
                 isArm and 'armshltx' or faction .. 'gant',
+                faction .. 'mohot3',
             }
 
         for _, option in ipairs(commonBuildoptions) do
