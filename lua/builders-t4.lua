@@ -36,12 +36,9 @@ do
         local t3AirAide = faction .. 't3airaide'
 
         -- Buildoptions for T4 Aide
-        -- Start with everything T3 Aide has except T4 Eco
+        -- Start with everything T3 Aide has
         local t4AideBuildoptions = {}
         if unitDefs[t3Aide] and unitDefs[t3Aide].buildoptions then
-            -- Note: T3 Aide should NOT have T4 Eco options anymore based on new restrictions,
-            -- but we filter here just in case to be safe, or just inherit raw.
-            -- Since we are modifying T3 logic separately, clean inheritance is fine.
             for _, opt in ipairs(unitDefs[t3Aide].buildoptions) do
                 table.insert(t4AideBuildoptions, opt)
             end
@@ -58,6 +55,7 @@ do
         if unitDefs[t4Fusion] then
             table.insert(t4AideBuildoptions, t4Fusion)
         end
+        local t3Mex = faction .. 'mohot3'
         if unitDefs[t3Mex] then
             table.insert(t4AideBuildoptions, t3Mex)
         end
