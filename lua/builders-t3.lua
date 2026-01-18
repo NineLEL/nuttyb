@@ -277,6 +277,16 @@ do
             then
                 table.insert(unitDefs[factoryName].buildoptions, groundAide)
             end
+
+            local groundAideT4 = faction .. 't4aide'
+            if
+                not tableContains(
+                    unitDefs[factoryName].buildoptions,
+                    groundAideT4
+                )
+            then
+                table.insert(unitDefs[factoryName].buildoptions, groundAideT4)
+            end
         end
 
         -- Buildoptions for T3 Gantrys (air)
@@ -287,6 +297,13 @@ do
                 not tableContains(unitDefs[factoryName].buildoptions, airAide)
             then
                 table.insert(unitDefs[factoryName].buildoptions, airAide)
+            end
+
+            local airAideT4 = faction .. 't4airaide'
+            if
+                not tableContains(unitDefs[factoryName].buildoptions, airAideT4)
+            then
+                table.insert(unitDefs[factoryName].buildoptions, airAideT4)
             end
         end
     end

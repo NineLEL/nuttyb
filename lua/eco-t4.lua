@@ -192,16 +192,22 @@ do
         'armacv',
         'armt3airaide',
         'armt3aide',
+        'armt4airaide',
+        'armt4aide',
         'corack',
         'coraca',
         'coracv',
         'cort3airaide',
         'cort3aide',
+        'cort4airaide',
+        'cort4aide',
         'legack',
         'legaca',
         'legacv',
         'legt3airaide',
         'legt3aide',
+        'legt4airaide',
+        'legt4aide',
     }
 
     for _, builderName in pairs(builders) do
