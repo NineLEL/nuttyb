@@ -2,7 +2,7 @@
 -- Authors: ChrispyNut, BackBash
 -- https://github.com/nuttyb-community/nuttyb
 
-{
+local unitDefs = {
     armcom = {
         customparams = {
             evolution_target = 'armcomlvl2',
@@ -73,6 +73,7 @@
                 corethickness = 0.75,
                 craterareaofeffect = 0,
                 craterboost = 0,
+                cratermult = 0,
                 commandfire = true,
                 cratermult = 0,
                 cegtag = 'railgun',
@@ -155,7 +156,6 @@
             'armfrad',
             'armhp',
             'armfhp',
-            'armadvsol',
             'armgeo',
             'armamex',
             'armnanotcplat',
@@ -664,3 +664,16 @@
         },
     },
 }
+
+if (Spring.GetModOptions().nuttyb_evo_commander or '1') == '0' then
+    if unitDefs.armcom then
+        unitDefs.armcom.customparams.evolution_target = nil
+        unitDefs.armcom.customparams.evolution_condition = nil
+        unitDefs.armcom.customparams.evolution_timer = nil
+        unitDefs.armcom.customparams.inheritxpratemultiplier = nil
+        unitDefs.armcom.customparams.childreninheritxp = nil
+        unitDefs.armcom.customparams.parentsinheritxp = nil
+    end
+end
+
+return unitDefs

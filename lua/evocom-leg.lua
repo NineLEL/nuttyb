@@ -2,9 +2,9 @@
 -- Authors: ChrispyNut, BackBash
 -- https://github.com/nuttyb-community/nuttyb
 
-{
+local unitDefs = {
     legcom = {
-				footprintx = 2,
+        footprintx = 2,
         footprintz = 2,
         energymake = 50,
         metalmake = 5,
@@ -99,7 +99,7 @@
         },
     },
     legcomlvl2 = {
-				footprintx = 2,
+        footprintx = 2,
         footprintz = 2,
         energymake = 150,
         metalmake = 15,
@@ -224,7 +224,7 @@
         },
     },
     legcomlvl3 = {
-				footprintx = 2,
+        footprintx = 2,
         footprintz = 2,
         energymake = 1280,
         metalmake = 40,
@@ -364,7 +364,7 @@
         },
     },
     legcomlvl4 = {
-				footprintx = 2,
+        footprintx = 2,
         footprintz = 2,
         energymake = 1980,
         metalmake = 46,
@@ -523,7 +523,7 @@
         },
     },
     legcomlvl5 = {
-				footprintx = 2,
+        footprintx = 2,
         footprintz = 2,
         energymake = 2280,
         metalmake = 64,
@@ -751,3 +751,16 @@
         },
     },
 }
+
+if (Spring.GetModOptions().nuttyb_evo_commander or '1') == '0' then
+    if unitDefs.legcom then
+        unitDefs.legcom.customparams.evolution_target = nil
+        unitDefs.legcom.customparams.evolution_condition = nil
+        unitDefs.legcom.customparams.evolution_timer = nil
+        unitDefs.legcom.customparams.inheritxpratemultiplier = nil
+        unitDefs.legcom.customparams.childreninheritxp = nil
+        unitDefs.legcom.customparams.parentsinheritxp = nil
+    end
+end
+
+return unitDefs

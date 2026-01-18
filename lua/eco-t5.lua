@@ -3,6 +3,10 @@
 -- https://github.com/nuttyb-community/nuttyb
 
 do
+    if (Spring.GetModOptions().nuttyb_tier5 or '1') == '0' then
+        return
+    end
+
     local unitDefs, tableMerge = UnitDefs or {}, table.merge
 
     local factions = { 'arm', 'cor', 'leg' }
@@ -22,7 +26,7 @@ do
         -- T5 Mythical Fusion Reactor
         local t4Fusion = faction .. 'afust4'
         local t5Fusion = faction .. 'afust5'
-        
+
         local fusion4Def = unitDefs[t4Fusion]
         if fusion4Def then
             cloneUnit(t4Fusion, t5Fusion, {
@@ -82,16 +86,15 @@ do
     local t5Fusions = {
         'armafust5',
         'corafust5',
-        'leghafust5', -- assuming generic pattern, checking logic below
+        'leghafust5', -- keeping as backup check if needed, but main logic uses loop below
     }
 
     for _, builderName in pairs(t5Builders) do
         local faction = builderName:sub(1, 3)
         local fusionName = faction .. 'afust5'
-        if faction == 'leg' then
-            fusionName = 'leghafust5'
-        end -- Legion naming convention fix
-
+        -- Note: We previously forced 'leghafust5' for Legion here, but the unit defined above is 'legafust5'. 
+        -- So we stick to standard pattern.
+        
         -- Override if specific name exists
         if unitDefs[fusionName] then
             ensureBuildOption(builderName, fusionName)

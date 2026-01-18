@@ -2,7 +2,7 @@
 -- Authors: ChrispyNut, BackBash
 -- https://github.com/nuttyb-community/nuttyb
 
-{
+local unitDefs = {
     corcom = {
         customparams = {
             evolution_target = 'corcomlvl2',
@@ -571,3 +571,16 @@
         },
     },
 }
+
+if (Spring.GetModOptions().nuttyb_evo_commander or '1') == '0' then
+    if unitDefs.corcom then
+        unitDefs.corcom.customparams.evolution_target = nil
+        unitDefs.corcom.customparams.evolution_condition = nil
+        unitDefs.corcom.customparams.evolution_timer = nil
+        unitDefs.corcom.customparams.inheritxpratemultiplier = nil
+        unitDefs.corcom.customparams.childreninheritxp = nil
+        unitDefs.corcom.customparams.parentsinheritxp = nil
+    end
+end
+
+return unitDefs
