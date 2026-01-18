@@ -153,9 +153,6 @@ export function buildTemplateContext(config: Configuration): TemplateContext {
         gameMap: config.gameMap,
         start: config.start,
         isMegaNuke: String(config.isMegaNuke),
-        isEvoCom: config.isEvoCom ? '1' : '0',
-        isTier4: config.isTier4 ? '1' : '0',
-        isTier5: config.isTier5 ? '1' : '0',
         // Numeric settings
         incomeMult: String(config.incomeMult),
         buildDistMult: String(config.buildDistMult),
