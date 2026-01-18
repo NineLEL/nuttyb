@@ -99,7 +99,11 @@ export const BASE_COMMANDS = [
     '!evocom 0',
     '!nowasting all',
     '!bSet unit_restrictions_nonukes 1',
+    '!bSet unit_restrictions_nonukes 1',
     '!bSet raptor_queen_count $queenCount$',
+    '!bSet nuttyb_evo_commander $isEvoCom$',
+    '!bSet nuttyb_tier4 $isTier4$',
+    '!bSet nuttyb_tier5 $isTier5$',
     '!rename Community NuttyB [$presetDifficulty$] $?[$lobbyName$]?$',
     '!balance',
 ] as const;
@@ -126,7 +130,6 @@ export const BASE_TWEAKS = {
         '~lua/evocom-arm.lua',
         '~lua/evocom-cor.lua',
         '~lua/lrpc-rebalance.lua',
-        '~lua/air-rework-t4.lua',
     ],
 } as const;
 
@@ -140,7 +143,6 @@ export const CONFIGURATION_MAPPING: ValueMapping = {
                     '~lua/raptor-hp-template.lua{HP_MULTIPLIER=1.3}',
                     '~lua/queen-hp-template.lua{HP_MULTIPLIER=1.3}',
                     '~lua/cross-faction-t2.lua',
-                    '~lua/defences-t4.lua',
                 ],
             },
             Medium: {
@@ -148,7 +150,6 @@ export const CONFIGURATION_MAPPING: ValueMapping = {
                     '~lua/raptor-hp-template.lua{HP_MULTIPLIER=1.5}',
                     '~lua/queen-hp-template.lua{HP_MULTIPLIER=1.5}',
                     '~lua/cross-faction-t2.lua',
-                    '~lua/defences-t4.lua',
                 ],
             },
             Hard: {
@@ -319,10 +320,27 @@ export const CONFIGURATION_MAPPING: ValueMapping = {
         description: 'Custom lobby name',
         values: {},
     },
-    isEcoT4: {
-        description: 'T4 Economy',
+    isEvoCom: {
+        description: 'Enable Evo Commander',
         values: {
-            true: { tweakdefs: ['~lua/eco-t4.lua'] },
+            true: undefined,
+            false: undefined,
+        },
+    },
+    isTier4: {
+        description: 'Enable Tier 4 Content',
+        values: {
+            true: {
+                tweakdefs: ['~lua/eco-t4.lua', '~lua/defences-t4.lua'],
+                tweakunits: ['~lua/air-rework-t4.lua'],
+            },
+            false: undefined,
+        },
+    },
+    isTier5: {
+        description: 'Enable Tier 5 Content',
+        values: {
+            true: undefined, // Files are loaded by base tweaks, logic handled by mod option
             false: undefined,
         },
     },

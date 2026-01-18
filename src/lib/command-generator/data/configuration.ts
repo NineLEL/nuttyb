@@ -37,7 +37,9 @@ export interface Configuration {
     gameMap: GameMap;
     start: StartOption;
     lobbyName: string;
-    isEcoT4: boolean;
+    isEvoCom: boolean;
+    isTier4: boolean;
+    isTier5: boolean;
     isRFLRPCRebalance: boolean;
     isRFLRPCT4: boolean;
     isMegaNuke: boolean;
@@ -54,7 +56,9 @@ export const DEFAULT_CONFIGURATION: Configuration = {
     gameMap: 'Full Metal Plate (12P)',
     start: 'No rush',
     lobbyName: '',
-    isEcoT4: true,
+    isEvoCom: true,
+    isTier4: true,
+    isTier5: true,
     isRFLRPCRebalance: true,
     isRFLRPCT4: true,
     isMegaNuke: false,
