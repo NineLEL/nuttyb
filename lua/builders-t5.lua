@@ -3,10 +3,6 @@
 -- https://github.com/nuttyb-community/nuttyb
 
 do
-    if (Spring.GetModOptions().nuttyb_tier5 or '1') == '0' then
-        return
-    end
-
     local unitDefs, factions, tableMerge, factionPrefix, tableContains =
         UnitDefs or {},
         { 'arm', 'cor', 'leg' },
@@ -55,9 +51,11 @@ do
             end
         end
 
-        -- Add T5 Eco (Unconditionally add string to avoid load order issues)
+        -- Add T5 Eco
         local t5Fusion = faction .. 'afust5'
-        table.insert(t5AideBuildoptions, t5Fusion)
+        if unitDefs[t5Fusion] then
+            table.insert(t5AideBuildoptions, t5Fusion)
+        end
 
         -- T5 Mythical Construction Turret
         local t5NanoTurret = faction .. 'nanotct5'
@@ -133,10 +131,5 @@ do
         ensureBuildOption(t4Turret, t5Aide)
         ensureBuildOption(t4Turret, t5AirAide)
         ensureBuildOption(t4Turret, t5NanoTurret)
-
-        -- Double check that T5 Fusion is on T5 Builders
-        ensureBuildOption(t5Aide, t5Fusion)
-        ensureBuildOption(t5AirAide, t5Fusion)
-        ensureBuildOption(t5NanoTurret, t5Fusion)
     end
 end

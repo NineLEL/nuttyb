@@ -1,13 +1,8 @@
-```lua
 -- T4 Metal Extractors
 -- Authors: NineLEL
 -- https://github.com/nuttyb-community/nuttyb
 
 do
-    if (Spring.GetModOptions().nuttyb_tier4 or '1') == '0' then
-        return
-    end
-
     local unitDefs, tableMerge = UnitDefs or {}, table.merge
 
     local factions = { 'arm', 'cor', 'leg' }

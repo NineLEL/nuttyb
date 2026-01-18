@@ -3,10 +3,6 @@
 -- https://github.com/nuttyb-community/nuttyb
 
 do
-    if (Spring.GetModOptions().nuttyb_tier4 or '1') == '0' then
-        return
-    end
-
     local unitDefs, factions, tableMerge, factionPrefix =
         UnitDefs or {},
         { 'arm', 'cor', 'leg' },
