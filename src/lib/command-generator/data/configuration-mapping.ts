@@ -26,7 +26,7 @@ export const LUA_PRIORITIES: Record<string, number> = {
     'lua/eco-mex-t4.lua': 8,
     'lua/eco-storage-t4.lua': 8,
     'lua/eco-t5.lua': 8,
-    'lua/builders-t5.lua': 8,
+    'lua/builders-t5.lua': 9,
     '~lua/eco-t4.lua': 9,
     '~lua/rflrpc-rebalance.lua': 10,
     '~lua/rflrpc-t4.lua': 11,

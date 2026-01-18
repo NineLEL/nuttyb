@@ -29,9 +29,9 @@ do
             buildtime = 428400,
             health = 160000,
             maxthisunit = 20,
-            name = factionPrefix[faction] .. 'T4 Metal Storage',
+            name = factionPrefix[faction] .. 'Legendary Metal Storage',
             customparams = {
-                i18n_en_humanname = 'T4 Hardened Metal Storage',
+                i18n_en_humanname = 'Legendary Metal Storage',
                 i18n_en_tooltip = 'Massive metal storage for the legendary commander.',
             },
         })
@@ -52,9 +52,9 @@ do
             buildtime = 280140,
             health = 150000,
             maxthisunit = 20,
-            name = factionPrefix[faction] .. 'T4 Energy Storage',
+            name = factionPrefix[faction] .. 'Legendary Energy Storage',
             customparams = {
-                i18n_en_humanname = 'T4 Hardened Energy Storage',
+                i18n_en_humanname = 'Legendary Energy Storage',
                 i18n_en_tooltip = 'UNLIMITED POWER STORAGE (almost).',
             },
         })

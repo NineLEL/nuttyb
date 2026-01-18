@@ -25,12 +25,12 @@ do
             buildtime = 128000,
             health = 10000,
             extractsmetal = 0.025,
-            name = factionPrefix[faction] .. 'Legendary Metal Extractor T4',
+            name = factionPrefix[faction] .. 'Legendary Metal Extractor',
             customparams = {
                 techlevel = 4,
                 unitgroup = 'eco',
-                i18n_en_humanname = 'Legendary Metal Extractor T4',
-                i18n_en_tooltip = 'The pinnacle of metal extraction. Unlimited power!',
+                i18n_en_humanname = 'Legendary Metal Extractor',
+                i18n_en_tooltip = 'The legendary pinnacle of metal extraction. Unlimited power!',
             },
         })
     end

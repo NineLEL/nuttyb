@@ -26,7 +26,7 @@ do
         addNewMergedUnitDef(faction .. 'nanotct2', faction .. 'nanotct3', {
             metalcost = 3700,
             energycost = 62000,
-            builddistance = 550,
+            builddistance = 500,
             buildtime = 108000,
             collisionvolumescales = '61 128 61',
             footprintx = 6,
@@ -264,10 +264,10 @@ do
             or 'leggant'
 
         -- Limit Bot Gantrys to 1
-        unitDefs[factoryName].maxthisunit = 1
+
 
         -- Limit AIR Gantrys to 1
-        unitDefs[faction .. 'apt3'].maxthisunit = 1
+
 
         if unitDefs[factoryName] and unitDefs[factoryName].buildoptions then
             local groundAide = faction .. 't3aide'
