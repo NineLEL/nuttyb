@@ -114,6 +114,7 @@ do
                 faction .. 'afust3',
                 faction .. 'nanotct2',
                 faction .. 'nanotct3',
+                faction .. 'nanotct4',
                 faction .. 'alab',
                 faction .. 'avp',
                 faction .. 'aap',

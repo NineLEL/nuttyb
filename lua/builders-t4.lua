@@ -56,6 +56,25 @@ do
             table.insert(t4AideBuildoptions, t4Fusion)
         end
 
+        -- T4 Construction Turret
+        local t4NanoTurret = faction .. 'nanotct4'
+        addNewMergedUnitDef(faction .. 'nanotct3', t4NanoTurret, {
+            metalcost = 11000,
+            energycost = 186000,
+            builddistance = 750,
+            buildtime = 320000,
+            health = 26400,
+            workertime = 5700,
+            customparams = {
+                i18n_en_humanname = 'T4 Construction Turret',
+                i18n_en_tooltip = 'Ultimate BUILDPOWER! For the legendary commander',
+            },
+        })
+
+        if unitDefs[t4NanoTurret] then
+            table.insert(t4AideBuildoptions, t4NanoTurret)
+        end
+
         -- Legendary Ground Constructor Aide
         local t4Aide = faction .. 't4aide'
         addNewMergedUnitDef(t3Aide, t4Aide, {

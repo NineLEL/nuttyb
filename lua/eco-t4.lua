@@ -194,6 +194,7 @@ do
         'armt3aide',
         'armt4airaide',
         'armt4aide',
+        'armnanotct4',
         'corack',
         'coraca',
         'coracv',
@@ -201,6 +202,7 @@ do
         'cort3aide',
         'cort4airaide',
         'cort4aide',
+        'cornanotct4',
         'legack',
         'legaca',
         'legacv',
@@ -208,6 +210,7 @@ do
         'legt3aide',
         'legt4airaide',
         'legt4aide',
+        'legnanotct4',
     }
 
     for _, builderName in pairs(builders) do
