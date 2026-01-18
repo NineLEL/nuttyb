@@ -16,24 +16,6 @@ do
         end
     end
 
-    local function ensureBuildOption(builderName, optionName)
-        local builder = unitDefs[builderName]
-        if not builder or not unitDefs[optionName] then
-            return
-        end
-        builder.buildoptions = builder.buildoptions or {}
-        local found = false
-        for _, opt in ipairs(builder.buildoptions) do
-            if opt == optionName then
-                found = true
-                break
-            end
-        end
-        if not found then
-            table.insert(builder.buildoptions, optionName)
-        end
-    end
-
     for _, faction in pairs(factions) do
         local isArm, isCor, isLeg =
             faction == 'arm', faction == 'cor', faction == 'leg'
@@ -41,7 +23,7 @@ do
         local t4Aide = faction .. 't4aide'
         local t4AirAide = faction .. 't4airaide'
         local t4Turret = faction .. 'nanotct4'
-
+        
         -- Buildoptions for T5 Aide
         -- Start with everything T4 Aide has
         local t5AideBuildoptions = {}
@@ -118,18 +100,5 @@ do
             },
             buildoptions = t5AideBuildoptions,
         })
-
-        -- Back-register T5 units to T4 builders
-        ensureBuildOption(t4Aide, t5Aide)
-        ensureBuildOption(t4Aide, t5AirAide)
-        ensureBuildOption(t4Aide, t5NanoTurret)
-
-        ensureBuildOption(t4AirAide, t5Aide)
-        ensureBuildOption(t4AirAide, t5AirAide)
-        ensureBuildOption(t4AirAide, t5NanoTurret)
-
-        ensureBuildOption(t4Turret, t5Aide)
-        ensureBuildOption(t4Turret, t5AirAide)
-        ensureBuildOption(t4Turret, t5NanoTurret)
     end
 end
