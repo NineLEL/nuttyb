@@ -59,4 +59,62 @@ do
             },
         })
     end
+
+    local function ensureBuildOption(builderName, optionName)
+        local builder = unitDefs[builderName]
+        if not builder or not unitDefs[optionName] then
+            return
+        end
+        builder.buildoptions = builder.buildoptions or {}
+        local found = false
+        for _, opt in ipairs(builder.buildoptions) do
+            if opt == optionName then
+                found = true
+                break
+            end
+        end
+        if not found then
+            table.insert(builder.buildoptions, optionName)
+        end
+    end
+
+    -- Explicitly add T4 Storage to T4 and T5 Builders (and remove from T3 if needed logic existed, but we rely on explicit add)
+    local builders = {
+        'armt4airaide',
+        'armt4aide',
+        'armnanotct4',
+        'armt5aide',
+        'armt5airaide',
+        'armnanotct5',
+        'cort4airaide',
+        'cort4aide',
+        'cornanotct4',
+        'cort5aide',
+        'cort5airaide',
+        'cornanotct5',
+        'legt4airaide',
+        'legt4aide',
+        'legnanotct4',
+        'legt5aide',
+        'legt5airaide',
+        'legnanotct5',
+    }
+
+    local newStorageUnits = {
+        'armuwadvmst4',
+        'armadvestoret4',
+        'coruwadvmst4',
+        'coradvestoret4',
+        'legamstort4',
+        'legadvestoret4',
+    }
+
+    for _, builderName in pairs(builders) do
+        local faction = builderName:sub(1, 3)
+        for _, storageName in pairs(newStorageUnits) do
+            if storageName:sub(1, 3) == faction then
+                ensureBuildOption(builderName, storageName)
+            end
+        end
+    end
 end

@@ -47,4 +47,54 @@ do
             })
         end
     end
+
+    local function ensureBuildOption(builderName, optionName)
+        local builder = unitDefs[builderName]
+        if not builder or not unitDefs[optionName] then
+            return
+        end
+        builder.buildoptions = builder.buildoptions or {}
+        local found = false
+        for _, opt in ipairs(builder.buildoptions) do
+            if opt == optionName then
+                found = true
+                break
+            end
+        end
+        if not found then
+            table.insert(builder.buildoptions, optionName)
+        end
+    end
+
+    -- Explicitly add T5 Eco (Fusion) to T5 Builders ONLY
+    local t5Builders = {
+        'armt5aide',
+        'armt5airaide',
+        'armnanotct5',
+        'cort5aide',
+        'cort5airaide',
+        'cornanotct5',
+        'legt5aide',
+        'legt5airaide',
+        'legnanotct5',
+    }
+
+    local t5Fusions = {
+        'armafust5',
+        'corafust5',
+        'leghafust5', -- assuming generic pattern, checking logic below
+    }
+
+    for _, builderName in pairs(t5Builders) do
+        local faction = builderName:sub(1, 3)
+        local fusionName = faction .. 'afust5'
+        if faction == 'leg' then
+            fusionName = 'leghafust5'
+        end -- Legion naming convention fix
+
+        -- Override if specific name exists
+        if unitDefs[fusionName] then
+            ensureBuildOption(builderName, fusionName)
+        end
+    end
 end

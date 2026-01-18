@@ -119,20 +119,17 @@ do
             buildoptions = t5AideBuildoptions,
         })
 
-        -- Back-register T5 units to T4 builders
+        -- Back-register T5 units to T4 builders (EXCEPT T5 ECO)
         ensureBuildOption(t4Aide, t5Aide)
         ensureBuildOption(t4Aide, t5AirAide)
         ensureBuildOption(t4Aide, t5NanoTurret)
-        ensureBuildOption(t4Aide, t5Fusion)
 
         ensureBuildOption(t4AirAide, t5Aide)
         ensureBuildOption(t4AirAide, t5AirAide)
         ensureBuildOption(t4AirAide, t5NanoTurret)
-        ensureBuildOption(t4AirAide, t5Fusion)
 
         ensureBuildOption(t4Turret, t5Aide)
         ensureBuildOption(t4Turret, t5AirAide)
         ensureBuildOption(t4Turret, t5NanoTurret)
-        ensureBuildOption(t4Turret, t5Fusion)
     end
 end
