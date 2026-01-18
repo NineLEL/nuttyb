@@ -59,6 +59,31 @@ do
         if unitDefs[t3Mex] then
             table.insert(t4AideBuildoptions, t3Mex)
         end
+        local t4Mex = faction .. 'mohot4'
+        if unitDefs[t4Mex] then
+            table.insert(t4AideBuildoptions, t4Mex)
+        end
+        local t4MetalStore = isLeg and 'legamstort4' or faction .. 'uwadvmst4'
+        if unitDefs[t4MetalStore] then
+            table.insert(t4AideBuildoptions, t4MetalStore)
+        end
+        local t4EnergyStore = isLeg and 'legadvestoret4'
+            or faction .. 'advestoret4'
+        if unitDefs[t4EnergyStore] then
+            table.insert(t4AideBuildoptions, t4EnergyStore)
+        end
+        local t5Aide = faction .. 't5aide'
+        if unitDefs[t5Aide] then
+            table.insert(t4AideBuildoptions, t5Aide)
+        end
+        local t5AirAide = faction .. 't5airaide'
+        if unitDefs[t5AirAide] then
+            table.insert(t4AideBuildoptions, t5AirAide)
+        end
+        local t5Turret = faction .. 'nanotct5'
+        if unitDefs[t5Turret] then
+            table.insert(t4AideBuildoptions, t5Turret)
+        end
 
         -- T4 Construction Turret
         local t4NanoTurret = faction .. 'nanotct4'
@@ -73,6 +98,7 @@ do
                 i18n_en_humanname = 'T4 Construction Turret',
                 i18n_en_tooltip = 'Ultimate BUILDPOWER! For the legendary commander',
             },
+            buildoptions = t4AideBuildoptions,
         })
 
         if unitDefs[t4NanoTurret] then
