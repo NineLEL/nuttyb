@@ -4,21 +4,19 @@
 -- https://github.com/nuttyb-community/nuttyb
 
 do
-    local unitDefs, tableMerge, tableCopy, RAPTOR_MATRIARCH_BASIC, CUSTOM_FUSION_EXPLO, spring =
-        UnitDefs or {},
-        table.merge,
-        table.copy,
+    local unitDefs, tableMerge, tableCopy, spring =
+        UnitDefs or {}, table.merge, table.copy, Spring
+    local MATRIARCH, CFX, SCBX, BRK, VO =
         'raptor_matriarch_basic',
         'customfusionexplo',
-        Spring
+        'ScavComBossExplo',
+        'berserk',
+        'VTOL OBJECT'
 
     local nbQhpMult, nbHpMult = 1.3, 1.3
-
-    -- Calculate health multipliers from existing unit definitions
-    nbHpMult = unitDefs[RAPTOR_MATRIARCH_BASIC].health / 60000
+    nbHpMult = unitDefs[MATRIARCH].health / 60000
     nbQhpMult = unitDefs['raptor_queen_epic'].health / 1250000
 
-    -- Calculate player count multiplier
     local playerCountScale = 1
     if spring.Utilities.Gametype.IsRaptors() then
         playerCountScale = (#spring.GetTeamList() - 2) / 12
@@ -27,51 +25,39 @@ do
     local spawnCountMult = spring.GetModOptions().raptor_spawncountmult or 3
     local totalSpawnScale = playerCountScale * (spawnCountMult / 3)
 
-    -- Function to scale unit counts based on player count
     local function scaledMax(base)
         return math.max(1, math.ceil(base * totalSpawnScale))
     end
 
-    -- Anger thresholds for mini-queen spawning
-    local mqAnger = { 01, 2, 03, 105, 110, 125 }
+    local mqAnger = { 50, 60, 70, 80, 90, 100 }
     local mqTimeMult =
         math.max(1, spring.GetModOptions().raptor_queentimemult or 1.3)
     local mqStart, mqLast = mqAnger[1], mqAnger[#mqAnger]
-    local mqTargetLast = mqTimeMult * mqAnger[#mqAnger] / 1.3
-    local mqFactor = (mqTargetLast - mqStart) / (mqLast - mqStart)
+    local mqFactor = (mqTimeMult * mqLast / 1.3 - mqStart) / (mqLast - mqStart)
 
-    -- Scale anger thresholds based on queen time multiplier
     for idx = 2, #mqAnger do
         mqAnger[idx] = math.floor(mqStart + (mqAnger[idx] - mqStart) * mqFactor)
     end
 
-    -- Calculate queen-related values for Doombringer spawning
     local mqNumQueens = spring.GetModOptions().raptor_queen_count or 1
-    local mqDoomAngerScale = 1
-    mqDoomAngerScale = math.min(10, nbQhpMult / 1.3 * 0.9)
-
+    local mqDoomAngerScale = math.min(10, nbQhpMult / 1.3 * 0.9)
     local queenThreshold = 20
-    local exponentialPart = 10
-        * (1.06 ^ math.max(0, math.min(mqNumQueens, queenThreshold) - 8))
-    local linearPart = math.max(0, mqNumQueens - queenThreshold)
-    local baseQueenAnger = exponentialPart + linearPart
+    local baseQueenAnger = 10
+            * (1.06 ^ math.max(0, math.min(mqNumQueens, queenThreshold) - 8))
+        + math.max(0, mqNumQueens - queenThreshold)
     local mqDoomAnger = math.ceil(mqDoomAngerScale * baseQueenAnger)
-    local mqAngerBoss = mqTimeMult * 100 + mqDoomAnger
+    local mqAngerBoss = mqTimeMult * 75 + mqDoomAnger
     local maxDoombringers =
         math.max(3, scaledMax(math.floor((21 * mqNumQueens + 36) / 19)))
 
-    -- Function to clone unit definitions
-    local function newUnit(sourceUnit, targetUnit, overrides)
-        if unitDefs[sourceUnit] and not unitDefs[targetUnit] then
-            unitDefs[targetUnit] =
-                tableMerge(unitDefs[sourceUnit], overrides or {})
+    local function newUnit(src, tgt, ovr)
+        if unitDefs[src] and not unitDefs[tgt] then
+            unitDefs[tgt] = tableMerge(unitDefs[src], ovr or {})
         end
     end
 
-    -- Base health value from matriarch
-    local baseHealth = unitDefs[RAPTOR_MATRIARCH_BASIC].health
+    local baseHealth = unitDefs[MATRIARCH].health
 
-    -- Create Queenling units (mini-queens)
     newUnit('raptor_queen_veryeasy', 'raptor_miniq_a', {
         name = 'Queenling Prima',
         icontype = 'raptor_queen_veryeasy',
@@ -105,21 +91,54 @@ do
     newUnit('armcomboss', 'raptor_armcomboss', {
         name = 'Arm Com Boss',
         icontype = 'armcomboss',
-        health = baseHealth * 6,
+        health = baseHealth * 5,
         customparams = {
             i18n_en_humanname = 'Arm Com Boss',
             i18n_en_tooltip = 'Swift and sharp, a noble among raptors.',
         },
     })
 
-    -- Copy weapon definitions from matriarch variants
+    newUnit('corcomboss', 'raptor_corcomboss', {
+        name = 'Cor Com Boss',
+        icontype = 'corcomboss',
+        health = baseHealth * 6,
+        customparams = {
+            i18n_en_humanname = 'Cor Com Boss',
+            i18n_en_tooltip = 'Relentless and brutal, a boss among raptors.',
+        },
+    })
+
+    newUnit('legcomlvl10', 'raptor_legcomboss', {
+        name = 'Legion Com Boss',
+        icontype = 'legcomlvl10',
+        speed = unitDefs.legcomlvl10.speed * 1.5,
+        health = unitDefs.legcomlvl10.health * 3,
+        customparams = {
+            i18n_en_humanname = 'Legion Com Boss',
+            i18n_en_tooltip = 'Fast and resilient, a terror of the swarm.',
+        },
+    })
+
+    if unitDefs.raptor_legcomboss and unitDefs.raptor_legcomboss.weapondefs then
+        unitDefs.raptor_legcomboss.weapondefs.disintegrator = nil
+        if unitDefs.raptor_legcomboss.weapons then
+            local i = #unitDefs.raptor_legcomboss.weapons
+            while i > 0 do
+                local w = unitDefs.raptor_legcomboss.weapons[i]
+                if w and w.def == 'disintegrator' then
+                    table.remove(unitDefs.raptor_legcomboss.weapons, i)
+                end
+                i = i - 1
+            end
+        end
+    end
+
     unitDefs.raptor_miniq_b.weapondefs.acidgoo =
         tableCopy(unitDefs['raptor_matriarch_acid'].weapondefs.acidgoo)
     unitDefs.raptor_miniq_c.weapondefs.empgoo =
         tableCopy(unitDefs['raptor_matriarch_electric'].weapondefs.goo)
 
-    -- Create Matrona variants (smaller matriarchs)
-    for _, matronaData in ipairs {
+    for _, d in ipairs {
         {
             'raptor_matriarch_basic',
             'raptor_mama_ba',
@@ -145,22 +164,18 @@ do
             'Acid-fueled, melting everything in sight.',
         },
     } do
-        newUnit(matronaData[1], matronaData[2], {
-            name = matronaData[3],
-            icontype = matronaData[1],
+        newUnit(d[1], d[2], {
+            name = d[3],
+            icontype = d[1],
             health = baseHealth * 1.5,
-            customparams = {
-                i18n_en_humanname = matronaData[3],
-                i18n_en_tooltip = matronaData[4],
-            },
+            customparams = { i18n_en_humanname = d[3], i18n_en_tooltip = d[4] },
         })
     end
 
-    -- Create Raptor Consort (penguin king variant)
     newUnit('critter_penguinking', 'raptor_consort', {
         name = 'Raptor Consort',
         icontype = 'corkorg',
-        health = baseHealth * 4,
+        health = baseHealth * 3,
         mass = 100000,
         nochasecategory = 'MOBILE VTOL OBJECT',
         sonarstealth = false,
@@ -175,11 +190,10 @@ do
     unitDefs.raptor_consort.weapondefs.goo =
         tableCopy(unitDefs['raptor_queen_epic'].weapondefs.goo)
 
-    -- Create Doombringer (ultimate boss unit)
     newUnit('raptor_consort', 'raptor_doombringer', {
         name = 'Doombringer',
         icontype = 'armafust3',
-        health = baseHealth * 12,
+        health = baseHealth * 10,
         speed = 50,
         customparams = {
             i18n_en_humanname = 'Doombringer',
@@ -187,56 +201,72 @@ do
         },
     })
 
-    -- Function to create PvE squad parameters
-    local function pveSquad(
-        minAnger,
-        maxAnger,
-        behavior,
-        rarity,
-        amount,
-        weight
-    )
+    local function pveSquad(minA, maxA, bhv, rar, amt, wgt)
         return {
             raptorcustomsquad = true,
-            raptorsquadunitsamount = amount or 1,
-            raptorsquadminanger = minAnger,
-            raptorsquadmaxanger = maxAnger,
-            raptorsquadweight = weight or 5,
-            raptorsquadrarity = rarity or 'basic',
-            raptorsquadbehavior = behavior,
+            raptorsquadunitsamount = amt or 1,
+            raptorsquadminanger = minA,
+            raptorsquadmaxanger = maxA,
+            raptorsquadweight = wgt or 5,
+            raptorsquadrarity = rar or 'basic',
+            raptorsquadbehavior = bhv,
             raptorsquadbehaviordistance = 500,
             raptorsquadbehaviorchance = 0.75,
         }
     end
 
-    -- Base destruction parameters for mini-queens
     local miniQueenCommon = {
-        selfdestructas = CUSTOM_FUSION_EXPLO,
-        explodeas = CUSTOM_FUSION_EXPLO,
+        selfdestructas = CFX,
+        explodeas = CFX,
         weapondefs = {
-            yellow_missile = {
-                damage = {
-                    default = 1,
-                    vtol = 1000,
-                },
+            yellow_missile = { damage = { default = 1, vtol = 1000 } },
+        },
+    }
+
+    local comBossWeapons = {
+        weapondefs = {
+            armcomlaserboss = {
+                name = 'Laser Boss',
+                reloadtime = 4,
+                rgbcolor = '0.3 1 0',
+                range = 1250,
+                speed = 25,
+                damage = { default = 4800, commanders = 2400, shield = 5000 },
+            },
+            armcomsealaserboss = {
+                name = 'Sea Laser Boss',
+                damage = { default = 5000 },
+            },
+        },
+        weapons = {
+            [1] = { def = 'armcomlaserboss', badtargetcategory = VO },
+            [2] = {
+                def = 'armcomsealaserboss',
+                maindir = '0 0 1',
+                maxangledif = 180,
+                badtargetcategory = VO,
             },
         },
     }
 
-    -- Apply configurations to all boss units
+    local comBossBase = tableMerge({
+        explodeas = SCBX,
+        maxthisunit = 4,
+        customparams = pveSquad(75, 100, BRK),
+    }, comBossWeapons)
+
     for unitName, unitConfig in pairs {
         raptor_miniq_a = tableMerge(miniQueenCommon, {
             maxthisunit = scaledMax(2),
-            customparams = pveSquad(mqAnger[1], mqAnger[2], 'berserk'),
+            customparams = pveSquad(60, 100, BRK),
             weapondefs = {
                 goo = { damage = { default = 750 } },
                 melee = { damage = { default = 4000 } },
             },
         }),
-
         raptor_miniq_b = tableMerge(miniQueenCommon, {
             maxthisunit = scaledMax(3),
-            customparams = pveSquad(mqAnger[3], mqAnger[4], 'berserk'),
+            customparams = pveSquad(mqAnger[3], 100, BRK),
             weapondefs = {
                 acidgoo = {
                     burst = 8,
@@ -254,10 +284,9 @@ do
                 [5] = { def = 'acidgoo', maindir = '0 0 1', maxangledif = 180 },
             },
         }),
-
         raptor_miniq_c = tableMerge(miniQueenCommon, {
             maxthisunit = scaledMax(4),
-            customparams = pveSquad(mqAnger[5], mqAnger[6], 'berserk'),
+            customparams = pveSquad(mqAnger[5], 100, BRK),
             weapondefs = {
                 empgoo = {
                     burst = 10,
@@ -275,11 +304,10 @@ do
                 [5] = { def = 'empgoo', maindir = '0 0 1', maxangledif = 180 },
             },
         }),
-
         raptor_consort = {
             explodeas = 'raptor_empdeath_big',
             maxthisunit = scaledMax(6),
-            customparams = pveSquad(mqAnger[2], 1000, 'berserk'),
+            customparams = pveSquad(mqAnger[3], 100, BRK),
             weapondefs = {
                 eyelaser = {
                     name = 'Angry Eyes',
@@ -304,20 +332,19 @@ do
                 },
             },
             weapons = {
-                [1] = { def = 'eyelaser', badtargetcategory = 'VTOL OBJECT' },
+                [1] = { def = 'eyelaser', badtargetcategory = VO },
                 [2] = {
                     def = 'goo',
                     maindir = '0 0 1',
                     maxangledif = 180,
-                    badtargetcategory = 'VTOL OBJECT',
+                    badtargetcategory = VO,
                 },
             },
         },
-
         raptor_doombringer = {
-            explodeas = 'ScavComBossExplo',
+            explodeas = SCBX,
             maxthisunit = maxDoombringers,
-            customparams = pveSquad(mqAngerBoss, 1000, 'berserk', nil, 1, 99),
+            customparams = pveSquad(95, 100, BRK, nil, 1, 99),
             weapondefs = {
                 eyelaser = {
                     name = 'Eyes of Doom',
@@ -341,99 +368,235 @@ do
                 },
             },
             weapons = {
-                [1] = { def = 'eyelaser', badtargetcategory = 'VTOL OBJECT' },
+                [1] = { def = 'eyelaser', badtargetcategory = VO },
                 [2] = {
                     def = 'goo',
                     maindir = '0 0 1',
                     maxangledif = 180,
-                    badtargetcategory = 'VTOL OBJECT',
+                    badtargetcategory = VO,
                 },
             },
         },
-
-        raptor_armcomboss = {
-            explodeas = 'ScavComBossExplo',
-            maxthisunit = maxDoombringers,
-            customparams = pveSquad(mqAnger[1], 1000, 'berserk'),
+        raptor_armcomboss = comBossBase,
+        raptor_corcomboss = comBossBase,
+        raptor_legcomboss = {
+            explodeas = SCBX,
+            maxthisunit = 1,
+            customparams = pveSquad(mqAnger[1], 100, BRK),
             weapondefs = {
-                armcomlaserboss = {
-                    name = 'Laser Boss',
-                    reloadtime = 0,
-                    rgbcolor = '0.3 1 0',
-                    range = 1250,
-                    speed = 25,
-                    damage = {
-                        default = 4800,
-                        commanders = 2400,
-                        shield = 5000,
-                    },
+                armmg_weapon = {
+                    accuracy = 100,
+                    areaofeffect = 110,
+                    avoidfeature = false,
+                    burnblow = true,
+                    burst = 2,
+                    burstrate = 0.15,
+                    craterareaofeffect = 0,
+                    craterboost = 0,
+                    cratermult = 0,
+                    edgeeffectiveness = 0.15,
+                    explosiongenerator = 'custom:genericshellexplosion-small-t2',
+                    gravityaffected = 'true',
+                    impulsefactor = 1.8,
+                    name = 'Rapid-Fire Plasma Cannon',
+                    noselfdamage = true,
+                    range = 500,
+                    reloadtime = 0.3,
+                    soundhit = 'xplomed2',
+                    soundhitwet = 'splssml',
+                    soundstart = 'cannon3',
+                    sprayangle = 500,
+                    turret = true,
+                    weapontype = 'Cannon',
+                    weaponvelocity = 600,
+                    damage = { default = 500, vtol = 250 },
                 },
-                armcomsealaserboss = {
-                    name = 'Sea Laser Boss',
-                    damage = { default = 5000 },
+                torpedo = {
+                    areaofeffect = 75,
+                    avoidfeature = false,
+                    avoidfriendly = true,
+                    burnblow = true,
+                    burst = 4,
+                    burstrate = 0.15,
+                    cegtag = 'torpedotrail-tiny',
+                    collidefriendly = true,
+                    craterareaofeffect = 0,
+                    craterboost = 0,
+                    cratermult = 0,
+                    edgeeffectiveness = 0.55,
+                    explosiongenerator = 'custom:genericshellexplosion-small-uw',
+                    flighttime = 1.8,
+                    impulsefactor = 0.123,
+                    model = 'legtorpedo.s3o',
+                    name = 'MK-X Torpedo Launcher',
+                    noselfdamage = true,
+                    predictboost = 1,
+                    range = 600,
+                    reloadtime = 0.8,
+                    soundhit = 'xplodep2',
+                    soundstart = 'torpedo1',
+                    startvelocity = 230,
+                    tracks = false,
+                    turnrate = 2500,
+                    turret = true,
+                    waterweapon = true,
+                    weaponacceleration = 50,
+                    weapontimer = 3,
+                    weapontype = 'TorpedoLauncher',
+                    weaponvelocity = 425,
+                    damage = { default = 400, subs = 200 },
+                },
+                railgunt2 = {
+                    areaofeffect = 16,
+                    avoidfeature = false,
+                    burnblow = false,
+                    burst = 4,
+                    burstrate = 0.12,
+                    cegtag = 'railgun',
+                    collidefriendly = false,
+                    craterareaofeffect = 0,
+                    craterboost = 0,
+                    cratermult = 0,
+                    duration = 0.12,
+                    edgeeffectiveness = 0.85,
+                    explosiongenerator = 'custom:plasmahit-sparkonly',
+                    fallOffRate = 0.2,
+                    firestarter = 0,
+                    impulsefactor = 1,
+                    intensity = 0.8,
+                    minintensity = 1,
+                    name = 'Railgun',
+                    noselfdamage = true,
+                    ownerExpAccWeight = 4.0,
+                    proximitypriority = 1,
+                    range = 950,
+                    reloadtime = 2,
+                    rgbcolor = '0.74 0.64 0.94',
+                    soundhit = 'mavgun3',
+                    soundhitwet = 'splshbig',
+                    soundstart = 'lancefire',
+                    soundstartvolume = 26,
+                    thickness = 3,
+                    tolerance = 6000,
+                    turret = true,
+                    weapontype = 'LaserCannon',
+                    weaponvelocity = 3000,
+                    damage = { default = 500 },
+                },
+                botcannon = {
+                    accuracy = 0.2,
+                    areaofeffect = 10,
+                    avoidfeature = false,
+                    avoidfriendly = false,
+                    burst = 9,
+                    burstrate = 0.025,
+                    collidefriendly = false,
+                    craterareaofeffect = 116,
+                    craterboost = 0.1,
+                    cratermult = 0.1,
+                    edgeeffectiveness = 0.15,
+                    energypershot = 5400,
+                    explosiongenerator = 'custom:botrailspawn',
+                    gravityaffected = 'true',
+                    heightboostfactor = 8,
+                    hightrajectory = 1,
+                    impulsefactor = 0.5,
+                    leadbonus = 0,
+                    model = 'LegionUnitCapsule.s3o',
+                    movingaccuracy = 600,
+                    mygravity = 4.8,
+                    name = 'Long range bot cannon',
+                    noselfdamage = true,
+                    projectiles = 2,
+                    range = 700,
+                    reloadtime = 0.9,
+                    sprayangle = 2800,
+                    stockpile = true,
+                    stockpiletime = 10,
+                    soundhit = 'xplonuk1xs',
+                    soundhitwet = 'splshbig',
+                    soundstart = 'lrpcshot3',
+                    soundstartvolume = 50,
+                    turret = true,
+                    trajectoryheight = 1,
+                    waterbounce = true,
+                    bounceSlip = 0.74,
+                    bouncerebound = 0.5,
+                    numbounce = 10,
+                    weapontype = 'Cannon',
+                    weaponvelocity = 2000,
+                    damage = { default = 0, shields = 250 },
+                    customparams = {
+                        spawns_name = 'raptor_allterrain_assault_basic_t4_v2 raptor_allterrain_assault_acid_t2_v1',
+                        spawns_expire = 15,
+                        spawns_surface = 'LAND',
+                        spawns_mode = 'random',
+                        stockpilelimit = 2,
+                    },
                 },
             },
             weapons = {
                 [1] = {
-                    def = 'armcomlaserboss',
-                    badtargetcategory = 'VTOL OBJECT',
+                    def = 'armmg_weapon',
+                    onlytargetcategory = 'NOTSUB',
+                    fastautoretargeting = true,
                 },
                 [2] = {
-                    def = 'armcomsealaserboss ',
-                    maindir = '0 0 1',
-                    maxangledif = 180,
-                    badtargetcategory = 'VTOL OBJECT',
+                    badtargetcategory = 'VTOL',
+                    def = 'torpedo',
+                    onlytargetcategory = 'NOTAIR',
+                },
+                [3] = {
+                    badtargetcategory = 'NOTAIR GROUNDSCOUT',
+                    def = 'railgunt2',
+                    onlytargetcategory = 'NOTSUB',
+                },
+                [4] = {
+                    badtargetcategory = 'VTOL GROUNDSCOUT SHIP',
+                    def = 'botcannon',
+                    onlytargetcategory = 'NOTSHIP',
                 },
             },
         },
-
         raptor_mama_ba = {
             maxthisunit = scaledMax(4),
-            customparams = pveSquad(55, mqAnger[3] - 1, 'berserk'),
+            customparams = pveSquad(55, 100, BRK),
             weapondefs = {
                 goo = { damage = { default = 750 } },
                 melee = { damage = { default = 750 } },
             },
         },
-
         raptor_mama_fi = {
             explodeas = 'raptor_empdeath_big',
             maxthisunit = scaledMax(4),
-            customparams = pveSquad(55, mqAnger[3] - 1, 'berserk'),
+            customparams = pveSquad(55, 100, BRK),
             weapondefs = {
                 flamethrowerspike = { damage = { default = 80 } },
                 flamethrowermain = { damage = { default = 160 } },
             },
         },
-
         raptor_mama_el = {
             maxthisunit = scaledMax(4),
-            customparams = pveSquad(65, 1000, 'berserk'),
+            customparams = pveSquad(65, 100, BRK),
         },
-
         raptor_mama_ac = {
             maxthisunit = scaledMax(4),
-            customparams = pveSquad(60, 1000, 'berserk'),
-            weapondefs = {
-                melee = { damage = { default = 750 } },
-            },
+            customparams = pveSquad(60, 100, BRK),
+            weapondefs = { melee = { damage = { default = 750 } } },
         },
-
         raptor_land_assault_basic_t4_v2 = {
             maxthisunit = scaledMax(8),
-            customparams = pveSquad(33, 50, 'raider'),
+            customparams = pveSquad(33, 100, 'raider'),
         },
-
         raptor_land_assault_basic_t4_v1 = {
             maxthisunit = scaledMax(12),
-            customparams = pveSquad(51, 64, 'raider', 'basic', 2),
+            customparams = pveSquad(51, 100, 'raider', 'basic', 2),
         },
     } do
         unitDefs[unitName] = unitDefs[unitName] or {}
         table.mergeInPlace(unitDefs[unitName], unitConfig, true)
     end
 
-    -- Metal costs for new units
     local newCosts = {
         raptor_mama_ba = 36000,
         raptor_mama_fi = 36000,
@@ -442,25 +605,19 @@ do
         raptor_consort = 45000,
         raptor_doombringer = 90000,
         raptor_armcomboss = 45000,
+        raptor_corcomboss = 45000,
+        raptor_legcomboss = 45000,
     }
 
-    -- Post-processing function to apply metal costs
     local oldUnitDef_Post = UnitDef_Post
-
     function UnitDef_Post(unitID, unitDef)
         if oldUnitDef_Post then
             oldUnitDef_Post(unitID, unitDef)
         end
-
-        local nbHpScale = 1
-        if nbHpMult > 1.3 then
-            nbHpScale = nbHpMult / 1.3
-        end
-
+        local nbHpScale = nbHpMult > 1.3 and nbHpMult / 1.3 or 1
         for unitName, baseCost in pairs(newCosts) do
             if UnitDefs[unitName] then
-                local finalCost = math.floor(baseCost * nbHpScale)
-                UnitDefs[unitName].metalcost = finalCost
+                UnitDefs[unitName].metalcost = math.floor(baseCost * nbHpScale)
             end
         end
     end

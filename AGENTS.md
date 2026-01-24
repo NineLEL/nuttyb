@@ -16,22 +16,22 @@ The Configurator allows players to select game tweaks and generates lobby comman
 ### Setup
 
 ```bash
-bun install
+pnpm install
 ```
 
 ### Web Development
 
 ```bash
-bun dev                    # Start Next.js dev server at localhost:3000
-bun build                  # Build for production
-bun start                  # Start production server
+pnpm dev                    # Start Next.js dev server at localhost:3000
+pnpm build                  # Build for production
+pnpm start                  # Start production server
 ```
 
 ### Lua Sync
 
 ```bash
-bun run sync -p .          # Sync Lua files from local path
-bun run sync --help        # See all sync options
+pnpm run sync -p .          # Sync Lua files from local path
+pnpm run sync --help        # See all sync options
 ```
 
 The sync script generates the Lua bundle (`public/data/lua-bundle.json`) that Configurator uses. Run this after modifying Lua tweak files.
@@ -39,9 +39,9 @@ The sync script generates the Lua bundle (`public/data/lua-bundle.json`) that Co
 ### Quality Checks
 
 ```bash
-bun test                   # Run tests (required before commits)
-bun lint                   # ESLint checks
-bun knip                   # Detect unused files and dependencies
+pnpm test                   # Run tests (required before commits)
+pnpm lint                   # ESLint checks
+pnpm knip                   # Detect unused files and dependencies
 ```
 
 There is a pre-commit hook that automatically runs required checks automatically before committing.
