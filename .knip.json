@@ -2,13 +2,11 @@
     "$schema": "https://unpkg.com/knip@5/schema.json",
     "entry": [
         "src/app/**/*.{ts,tsx}",
-        "scripts/sync/sync.ts",
-        "scripts/bundle-report/bundle-report.ts",
         "tests/**/*.test.{ts,js}"
     ],
     "project": ["src/**/*.{ts,tsx,js,jsx}", "scripts/**/*.{ts,tsx,js,jsx}"],
     "ignore": ["**/*.config.*"],
-    "ignoreDependencies": ["eslint-nibble", "tailwindcss"],
+    "ignoreDependencies": ["eslint-nibble", "tailwindcss", "source-map-js"],
     "ignoreExportsUsedInFile": {
         "interface": true,
         "type": true
