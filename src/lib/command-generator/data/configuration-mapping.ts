@@ -104,17 +104,17 @@ export const BASE_COMMANDS = [
  */
 export const BASE_TWEAKS = {
     tweakdefs: [
-        '~lua/main-defs.lua',
+        // '~lua/main-defs.lua',
         '~lua/eco-t3.lua',
-        '~lua/unit-launchers.lua',
+        // '~lua/unit-launchers.lua',
         '~lua/builders-upgrades.lua',
         '~lua/eco-mex-upgrades.lua',
     ],
     tweakunits: [
-        '~lua/main-units.lua',
-        '~lua/evocom-leg.lua',
-        '~lua/evocom-arm.lua',
-        '~lua/evocom-cor.lua',
+        // '~lua/main-units.lua',
+        // '~lua/evocom-leg.lua',
+        // '~lua/evocom-arm.lua',
+        // '~lua/evocom-cor.lua',
         '~lua/lrpc-rebalance.lua',
         '~lua/air-rework-t4.lua',
     ],

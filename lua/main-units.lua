@@ -63,8 +63,8 @@
     },
     armflak = {
         airsightdistance = 1350,
-        energycost = 30000,
-        metalcost = 1500,
+        -- energycost = 30000,
+        -- metalcost = 1500,
         health = 4000,
         weapondefs = {
             armflak_gun = {
@@ -82,8 +82,8 @@
     },
     corflak = {
         airsightdistance = 1350,
-        energycost = 30000,
-        metalcost = 1500,
+        -- energycost = 30000,
+        -- metalcost = 1500,
         health = 4000,
         weapondefs = {
             armflak_gun = {
@@ -103,8 +103,8 @@
         footprintx = 4,
         footprintz = 4,
         airsightdistance = 1350,
-        energycost = 35000,
-        metalcost = 2100,
+        -- energycost = 35000,
+        -- metalcost = 2100,
         health = 6000,
         weapondefs = {
             legflak_gun = {
