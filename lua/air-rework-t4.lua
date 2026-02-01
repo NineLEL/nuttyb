@@ -7,6 +7,7 @@ do
     local merge = table.mergeInPlace or table.merge
 
     local payload = {
+        maxthisunit = 20,
         customparams = {
             i18n_en_humanname = 'Experimental Tyrannus',
             i18n_en_tooltip = 'In dedication to our commander Tyrannus',
